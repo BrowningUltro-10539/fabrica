@@ -2,7 +2,7 @@ import type { FileHandle } from 'node:fs/promises'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import type { LocalFile } from './types.ts'
+import type { LocalFile, Product } from './types.ts'
 import crypto from 'node:crypto'
 import stream from 'node:stream/promises'
 import url from 'node:url'
@@ -39,3 +39,5 @@ export async function useFile(
     hash
   }
 }
+
+export const defineAdapter = (fn: Product[]) => fn
