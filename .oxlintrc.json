@@ -1,0 +1,7 @@
+{
+  "plugins": ["import"],
+  "rules": {
+    "typescript/consistent-type-imports": "error",
+    "import/consistent-type-specifier-style": "error"
+  }
+}
