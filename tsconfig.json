@@ -2,6 +2,9 @@
   "extends": "@tsconfig/node-lts/tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "lib": ["DOM"],
+    "types": ["node"],
+    "erasableSyntaxOnly": true
   }
 }

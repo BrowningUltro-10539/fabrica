@@ -1,4 +1,8 @@
-default: build
+default:
+    @just --list
 
 build:
     echo "dummy"
+
+exec script:
+    node '{{ script }}'
