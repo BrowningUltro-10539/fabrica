@@ -6,6 +6,7 @@ import type { LocalFile, Product } from './types.ts'
 import crypto from 'node:crypto'
 import stream from 'node:stream/promises'
 import url from 'node:url'
+import { JSDOM } from 'jsdom'
 
 const { O_CREAT, O_EXCL, O_RDWR } = fs.constants
 
@@ -41,3 +42,9 @@ export async function useFile(
 }
 
 export const defineAdapter = (fn: Product[]) => fn
+
+export async function getDocument(siteURL: string) {
+  const site = await fetch(siteURL)
+
+  return new JSDOM(await site.text()).window.document
+}
