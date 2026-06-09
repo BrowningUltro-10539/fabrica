@@ -7,7 +7,7 @@
   "author": "",
   "type": "module",
   "exports": {
-    "./products.json": "./build/products.json"
+    "./products.json": "./dist/products.json"
   },
   "devDependencies": {
     "@types/jsdom": "^28.0.3",

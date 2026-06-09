@@ -8,7 +8,7 @@ exec script:
     node --expose-gc '{{ script }}'
 
 clean-build:
-    rm build -rf
+    rm dist -rf
 
 clean-build-files:
-    rm build/files/**
+    rm dist/files/**

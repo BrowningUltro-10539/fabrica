@@ -14,7 +14,7 @@ const { O_CREAT, O_EXCL, O_RDWR, O_APPEND } = fs.constants
 const dbPath = path.join(
   path.dirname(url.fileURLToPath(import.meta.url)),
   '..',
-  'build',
+  'dist',
   'files'
 )
 
