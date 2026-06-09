@@ -8,7 +8,7 @@ import stream from 'node:stream/promises'
 import url from 'node:url'
 import { JSDOM } from 'jsdom'
 
-const { O_CREAT, O_EXCL, O_RDWR } = fs.constants
+const { O_CREAT, O_EXCL, O_RDWR, O_APPEND } = fs.constants
 
 const dbPath = path.join(
   path.dirname(url.fileURLToPath(import.meta.url)),
@@ -25,7 +25,10 @@ export async function useFile(
   )
 
   const filePath = path.join(tempDir.path, 'temp')
-  await using file = await fs.open(filePath, O_CREAT | O_EXCL | O_RDWR)
+  await using file = await fs.open(
+    filePath,
+    O_CREAT | O_EXCL | O_RDWR | O_APPEND
+  )
   await callback(file)
   const hasher = crypto.createHash('sha256')
 
