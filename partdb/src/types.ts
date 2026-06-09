@@ -112,6 +112,7 @@ export type Product = {
   sku: SKU
   description: string
   keywords: Keyword[]
+  image?: File
   specifications: {
     [key: string]: any
     /**
