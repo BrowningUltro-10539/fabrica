@@ -6,3 +6,9 @@ build:
 
 exec script:
     node --expose-gc '{{ script }}'
+
+clean-build:
+    rm build -rf
+
+clean-build-files:
+    rm build/files/**
