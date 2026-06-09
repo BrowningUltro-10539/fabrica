@@ -7,6 +7,7 @@ import crypto from 'node:crypto'
 import stream from 'node:stream/promises'
 import url from 'node:url'
 import { JSDOM } from 'jsdom'
+import { setTimeout } from 'node:timers/promises'
 
 const { O_CREAT, O_EXCL, O_RDWR, O_APPEND } = fs.constants
 
@@ -46,8 +47,66 @@ export async function useFile(
 
 export const defineAdapter = (fn: Product[]) => fn
 
-export async function getDocument(siteURL: string) {
-  const site = await fetch(siteURL)
+let inThrottle = false
+const throttleQueue: Array<() => Promise<void>> = []
+const MIN_WAIT_MS = 100
 
-  return new JSDOM(await site.text()).window.document
+async function processQueue() {
+  if (inThrottle || throttleQueue.length === 0) return
+  inThrottle = true
+  for (const request of throttleQueue) {
+    request()
+    await setTimeout(MIN_WAIT_MS)
+  }
+  throttleQueue.length = 0
+  inThrottle = false
+}
+
+const rateLimitedFetch: typeof fetch = (...args) =>
+  new Promise((res, rej) => {
+    throttleQueue.push(() =>
+      fetch(...args)
+        .then(res)
+        .catch(rej)
+    )
+    processQueue()
+  })
+
+/**
+ *
+ * @param siteURL URL to the site. Can either be the domain itself or a page on the website, like in an HTTP request.
+ * @param baseSite The base site. Do NOT include a trailing slash!
+ * @returns A JSDOM-based document object
+ */
+export async function getDocument(
+  siteURL: string,
+  baseSite: string
+): Promise<{ document: Document; finalSite: string }> {
+  if (siteURL.startsWith('/')) siteURL = baseSite + siteURL
+
+  console.log(`Fetching ${siteURL}...`)
+
+  const site = await rateLimitedFetch(siteURL, {
+    headers: {
+      'User-Agent': 'FTC 10539 (Ultro) Internal Project <ultro.browning.edu>'
+    }
+  })
+
+  if (!site.ok)
+    throw Error(
+      `Request failed (${site.status} ${site.statusText}): ${await site.text()}`
+    )
+
+  const { document } = new JSDOM(await site.text()).window
+
+  const meta = document.querySelector(
+    'meta[http-equiv="refresh"]'
+  ) as HTMLMetaElement
+  if (meta) {
+    const { content } = meta
+    const newSiteURL = content.split(';url=')[1]
+    return getDocument(newSiteURL, baseSite)
+  }
+
+  return { document, finalSite: siteURL }
 }
