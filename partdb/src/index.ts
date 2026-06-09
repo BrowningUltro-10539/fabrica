@@ -1,3 +1,3 @@
-import { type Product } from './internal/types.ts'
+import type { Product } from './internal/types.ts'
 
 export default [] as Product[]
