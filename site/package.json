@@ -1,0 +1,11 @@
+{
+  "name": "site",
+  "version": "0.0.1",
+  "type": "module",
+  "dependencies": {
+    "astro": "^6.4.4"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

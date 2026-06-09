@@ -6,7 +6,10 @@
   "license": "",
   "author": "",
   "type": "module",
-  "dependencies": {
+  "exports": {
+    "./products.json": "./build/products.json"
+  },
+  "devDependencies": {
     "@types/jsdom": "^28.0.3",
     "jsdom": "^29.1.1"
   }

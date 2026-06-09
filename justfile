@@ -1,4 +1,5 @@
 mod partdb
+mod site
 
 default:
     @just --list --list-submodules

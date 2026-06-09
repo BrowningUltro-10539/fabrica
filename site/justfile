@@ -1,0 +1,20 @@
+export PATH := "./node_modules/.bin:" + env('PATH')
+
+default:
+    @just --list
+
+# Run the astro CLI, with all arguments passed in.
+astro *FLAGS:
+    astro {{ FLAGS }}
+
+# Run the dev server. To pass in options, use the `astro dev ...` recipe instead.
+dev:
+    astro dev
+
+# Build the site. To pass in options, use the `astro build ...` recipe instead.
+build:
+    astro build
+
+# Preview the built site. To pass in options, use the `astro preview ...` recipe instead.
+preview:
+    astro preview
