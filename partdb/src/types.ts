@@ -1,3 +1,55 @@
+export const brands = [
+  {
+    name: 'goBILDA',
+    id: 'com.gobilda'
+  },
+  {
+    name: 'REV Robotics',
+    id: 'com.revrobotics'
+  },
+  {
+    name: 'FIRST',
+    id: 'org.firstinspires'
+  },
+  {
+    name: 'AndyMark',
+    id: 'com.andymark'
+  },
+  {
+    name: 'Axon Robotics',
+    id: 'com.axon-robotics'
+  },
+  {
+    name: 'Studica',
+    id: 'com.studica'
+  }
+] as const
+
+export type BrandID = (typeof brands)[number]['id'] | (string & {})
+
+export type SKU = `${BrandID}.${string}`
+
+/**
+ * A file hosted by the database.
+ * Useful in cases where the original STEP file is not accessible directly from the brand,
+ * or if it's packaged in a non-STEP format.
+ */
+export type LocalFile = {
+  type: 'local'
+  hash: string
+}
+
+/**
+ * A file hosted externally.
+ * Note that
+ */
+export type ExternalFile = {
+  type: 'external'
+  url: URL
+}
+
+export type STEPFile = LocalFile | ExternalFile
+
 export type Keyword =
   | 'motor'
   | 'servo'
@@ -12,28 +64,8 @@ export type Keyword =
   | 'gear'
   | (string & {})
 
-export type CommonSpecifications = {
-  [key: string]: any
-  /**
-   * Weight of the prodct in grams.
-   */
-  weight?: number
-  /**
-   * Length of the product in centimeters.
-   */
-  length?: number
-  /**
-   * Width of the product in centimeters.
-   */
-  width?: number
-  /**
-   * Height of the product in centimeters.
-   */
-  height?: number
-}
-
 /**
- * T
+ * This type represents
  */
 export type Product = {
   /**
@@ -68,19 +100,30 @@ export type Product = {
    * ```
    */
   name: string
-  sku: string
+  sku: SKU
   description: string
   keywords: Keyword[]
-  specifications: CommonSpecifications
-}
-
-let product: Product = {
-  name: '',
-  sku: '',
-  description: '',
-  keywords: [],
   specifications: {
-    weight: 30,
-    j: ''
+    [key: string]: any
+    /**
+     * Weight of the prodct in grams.
+     */
+    weight?: number
+    /**
+     * Length of the product in centimeters.
+     */
+    length?: number
+    /**
+     * Width of the product in centimeters.
+     */
+    width?: number
+    /**
+     * Height of the product in centimeters.
+     */
+    height?: number
+  }
+  cad?: {
+    step?: STEPFile
+    onshape?: URL
   }
 }
