@@ -61,7 +61,11 @@ export type Keyword =
   | 'bearing'
   | 'bracket'
   | 'plate'
+  | 'mount'
   | 'gear'
+  | 'beam'
+  | 'shaft'
+  | 'wheel'
   | (string & {})
 
 /**
