@@ -5,4 +5,4 @@ build:
     echo "dummy"
 
 exec script:
-    node '{{ script }}'
+    node --expose-gc '{{ script }}'
