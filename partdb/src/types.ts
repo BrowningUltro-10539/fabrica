@@ -48,7 +48,12 @@ export type ExternalFile = {
   url: URL
 }
 
-export type STEPFile = LocalFile | ExternalFile
+export type File = LocalFile | ExternalFile
+
+export const isLocalFile = (file: File): file is LocalFile =>
+  file.type === 'local'
+export const isExternalFile = (file: File): file is ExternalFile =>
+  file.type === 'external'
 
 export type Keyword =
   | 'motor'
@@ -127,7 +132,7 @@ export type Product = {
     height?: number
   }
   cad?: {
-    step?: STEPFile
+    step?: File
     onshape?: URL
   }
 }
