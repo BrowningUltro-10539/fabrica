@@ -1,4 +1,4 @@
-import { useFile } from '../src/helpers.ts'
+import { useFile } from '../src/internal/helpers.ts'
 
 let object = {
   item1: await useFile(async (file) => {
