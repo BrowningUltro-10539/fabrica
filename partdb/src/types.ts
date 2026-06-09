@@ -115,7 +115,7 @@ export type Product = {
   specifications: {
     [key: string]: any
     /**
-     * Weight of the prodct in grams.
+     * Weight of the product in grams.
      */
     weight?: number
     /**
