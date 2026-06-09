@@ -7,7 +7,11 @@
   "author": "",
   "type": "module",
   "exports": {
-    "./products.json": "./dist/products.json"
+    "./products.json": "./dist/products.json",
+    ".": {
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
   },
   "devDependencies": {
     "@types/jsdom": "^28.0.3",
