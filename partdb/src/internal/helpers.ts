@@ -55,7 +55,7 @@ async function processQueue() {
   if (inThrottle || throttleQueue.length === 0) return
   inThrottle = true
   for (const request of throttleQueue) {
-    request()
+    void request()
     await setTimeout(MIN_WAIT_MS)
   }
   throttleQueue.length = 0
@@ -69,7 +69,7 @@ const rateLimitedFetch: typeof fetch = (...args) =>
         .then(res)
         .catch(rej)
     )
-    processQueue()
+    void processQueue()
   })
 
 /**
