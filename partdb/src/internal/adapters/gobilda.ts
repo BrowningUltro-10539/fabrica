@@ -35,7 +35,9 @@ async function main(): Promise<Product[]> {
             try {
               product = await parseProductPage(productPage, keywords)
             } catch (e) {
-              console.error(`Error for page ${productPage}: ${e}`)
+              console.error(
+                `Error for page ${productPage}: ${(e as Error).message}`
+              )
             }
             if (global) global.gc?.()
             if (product) products.push(product)
