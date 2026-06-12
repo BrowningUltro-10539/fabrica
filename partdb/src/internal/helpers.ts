@@ -19,7 +19,8 @@ const dbPath = path.join(
 )
 
 export async function useFile(
-  callback: (file: FileHandle) => Promise<void>
+  callback: (file: FileHandle) => Promise<void>,
+  name?: string
 ): Promise<LocalFile> {
   await using tempDir = await fs.mkdtempDisposable(
     path.join(os.tmpdir(), 'fabrica-partsdb-')
@@ -31,17 +32,19 @@ export async function useFile(
     O_CREAT | O_EXCL | O_RDWR | O_APPEND
   )
   await callback(file)
-  const hasher = crypto.createHash('sha256')
+  if (!name) {
+    const hasher = crypto.createHash('sha256')
 
-  await stream.pipeline(file.createReadStream({ start: 0 }), hasher)
-  const hash = hasher.digest('base64url')
+    await stream.pipeline(file.createReadStream({ start: 0 }), hasher)
+    name = hasher.digest('base64url')
+  }
 
   await fs.mkdir(dbPath, { recursive: true })
-  await fs.copyFile(filePath, path.join(dbPath, hash))
+  await fs.copyFile(filePath, path.join(dbPath, name))
 
   return {
     type: 'local',
-    name: hash
+    name
   }
 }
 
