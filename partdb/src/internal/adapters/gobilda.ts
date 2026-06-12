@@ -19,11 +19,11 @@ async function main(): Promise<Product[]> {
   const pages = getPages(
     document.querySelector('div.body > div.container > ul')!
   )
-  const { hash } = await useFile((file) =>
+  const { name } = await useFile((file) =>
     file.writeFile(JSON.stringify(pages, null, 2))
   )
   const products: Product[] = []
-  console.log(`Product pages written to ./dist/files/${hash}`)
+  console.log(`Product pages written to ./dist/files/${name}`)
   await useFile(async (file) => {
     await file.writeFile('{\n')
     await Promise.all(
@@ -180,13 +180,13 @@ async function parseCategoryPage(page: string): Promise<string[]> {
     )
     .map((li) => li.querySelector('a')!.href)
 
-  // const { hash } = await useFile((file) =>
+  // const { name } = await useFile((file) =>
   //   file.writeFile(
   //     `// Links for category ${finalSite}\n${JSON.stringify(links, null, 2)}`
   //   )
   // )
   // console.log(
-  //   `Links for category page ${finalSite} written to ./dist/files/${hash}`
+  //   `Links for category page ${finalSite} written to ./dist/files/${name}`
   // )
   return links
 }
@@ -276,8 +276,8 @@ async function parseProductPage(
 
 const products = await main()
 
-const { hash } = await useFile((file) =>
+const { name } = await useFile((file) =>
   file.writeFile(JSON.stringify(products, null, 2))
 )
-console.log(`Final list written to ./dist/files/${hash}`)
+console.log(`Final list written to ./dist/files/${name}`)
 export default defineAdapter(products)

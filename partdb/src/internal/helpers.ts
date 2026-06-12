@@ -41,7 +41,7 @@ export async function useFile(
 
   return {
     type: 'local',
-    hash
+    name: hash
   }
 }
 
