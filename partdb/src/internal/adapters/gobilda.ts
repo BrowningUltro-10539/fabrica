@@ -23,7 +23,7 @@ async function main(): Promise<Product[]> {
     file.writeFile(JSON.stringify(pages, null, 2))
   )
   const products: Product[] = []
-  console.log(`Product pages written to ./dist/files/${name}`)
+  console.log(`Product pages written to ./cache/${name}`)
   await useFile(async (file) => {
     await file.writeFile('{\n')
     await Promise.all(
@@ -186,7 +186,7 @@ async function parseCategoryPage(page: string): Promise<string[]> {
   //   )
   // )
   // console.log(
-  //   `Links for category page ${finalSite} written to ./dist/files/${name}`
+  //   `Links for category page ${finalSite} written to ./cache/${name}`
   // )
   return links
 }
@@ -279,5 +279,5 @@ const products = await main()
 const { name } = await useFile((file) =>
   file.writeFile(JSON.stringify(products, null, 2))
 )
-console.log(`Final list written to ./dist/files/${name}`)
+console.log(`Final list written to ./cache/${name}`)
 export default defineAdapter(products)
