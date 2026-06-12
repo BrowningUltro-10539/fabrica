@@ -1,3 +1,4 @@
-import type { Product } from './internal/types.ts'
-
-export default [] as Product[]
+export type { Product, BrandID } from './internal/types.ts'
+export { brands } from './internal/types.ts'
+import productsMacro from './internal/index.ts' with { type: 'macro' }
+export const products = productsMacro
