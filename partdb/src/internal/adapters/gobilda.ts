@@ -248,6 +248,7 @@ async function parseProductPage(
   // `parseInt`-ing the whole string.
   let weight = ''
   for (const char of [
+    // oxlint-disable-next-line typescript/no-misused-spread
     ...(querySelectorStrict('meta[itemprop="weight"]') as HTMLMetaElement)
       .content
   ]) {
