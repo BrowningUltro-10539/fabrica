@@ -36,7 +36,7 @@ export type SKU = `${BrandID}.${string}`
  */
 export type LocalFile = {
   type: 'local'
-  hash: string
+  name: string
 }
 
 /**
