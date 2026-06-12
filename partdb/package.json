@@ -7,7 +7,6 @@
   "author": "",
   "type": "module",
   "exports": {
-    "./products.json": "./dist/products.json",
     ".": {
       "default": "./dist/index.js",
       "types": "./dist/index.d.ts"
