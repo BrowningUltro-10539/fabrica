@@ -17,6 +17,20 @@ const dbPath = path.join(
   'cache'
 )
 
+/**
+ * Hook for creating files for object storage for the site.
+ * This is most likely a STEP file.
+ *
+ * @param callback Logic to handle writing the file.
+ * The file is read-write, with
+ * append-only writes.
+ *
+ * @param name Name of the file.
+ * If not given, the name is assigned
+ * the hash of the file's contents.
+ *
+ * @returns An object that contains the type of the file (local) and its name.
+ */
 export async function useFile(
   callback: (file: FileHandle) => Promise<void>,
   name?: string
