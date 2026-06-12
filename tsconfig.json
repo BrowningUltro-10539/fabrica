@@ -3,7 +3,7 @@
   "compilerOptions": {
     "noEmit": true,
     "allowImportingTsExtensions": true,
-    "lib": ["DOM"],
+    "lib": ["DOM", "ESNext"],
     "types": ["node"],
     "erasableSyntaxOnly": true
   }
