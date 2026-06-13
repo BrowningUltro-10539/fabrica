@@ -8,13 +8,34 @@ import stream from 'node:stream/promises'
 import url from 'node:url'
 import { JSDOM } from 'jsdom'
 import { setTimeout } from 'node:timers/promises'
+import type { JsonValue } from 'type-fest'
+
+/* -------------------------------------------------------------------------- */
+/*                                TYPE HELPERS                                */
+/* -------------------------------------------------------------------------- */
+
+export const defineAdapter = (fn: Product[]) => fn
+
+/* -------------------------------------------------------------------------- */
+/*                          CACHING AND FILE CREATION                         */
+/* -------------------------------------------------------------------------- */
 
 const { O_CREAT, O_EXCL, O_RDWR, O_APPEND } = fs.constants
 
 const dbPath = path.join(
   path.dirname(url.fileURLToPath(import.meta.url)),
   '..',
-  'cache'
+  '..',
+  'dist',
+  'files'
+)
+
+const cachePath = path.join(
+  path.dirname(url.fileURLToPath(import.meta.url)),
+  '..',
+  '..',
+  'cache',
+  'files'
 )
 
 /**
@@ -61,32 +82,107 @@ export async function useFile(
   }
 }
 
-export const defineAdapter = (fn: Product[]) => fn
+/**
+ * Error thrown within useCache when the cache is missed.
+ */
+class CacheMissError extends Error {}
 
-let inThrottle = false
-const throttleQueue: Array<() => Promise<void>> = []
-const MIN_WAIT_MS = 100
-
-async function processQueue() {
-  if (inThrottle || throttleQueue.length === 0) return
-  inThrottle = true
-  for (const request of throttleQueue) {
-    void request()
-    await setTimeout(MIN_WAIT_MS)
+/**
+ * Cache a computation that produces a serializable value.
+ * @param key Globally unique string representing the value
+ * @param callback Function to compute the value
+ * @param options Caching options
+ */
+export async function useCache<Value extends JsonValue>(
+  key: string,
+  callback: (() => Promise<Value>) | (() => Value),
+  options?: {
+    /**
+     * An optional duration from initial creation of the cached value.
+     * If not given, the value is cached indefinitely.
+     */
+    lifetime?: Temporal.Duration
   }
-  throttleQueue.length = 0
-  inThrottle = false
+): Promise<Value> {
+  // every cached value is keyed by the base64url hash of
+  // the inputted key. it's kinda overkill since
+  // all i realistically need is a key sanitizer
+  // but i'm too lazy to make it myself or
+  // import another library.
+  const keyHash = crypto.createHash('sha256').update(key).digest('base64url')
+
+  // within each file is a json blob containing
+  // the value and the expiration date if provided.
+  type CacheEntry<Value extends JsonValue> = {
+    expiration?: string
+    value: Value
+  }
+
+  try {
+    // check cache
+    let file: string
+    try {
+      file = await fs.readFile(path.join(cachePath, keyHash), {
+        encoding: 'utf-8'
+      })
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code === 'ENOENT')
+        throw new CacheMissError(`useCache cache entry for ${key} not found`)
+      throw e
+    }
+    const { expiration, value } = JSON.parse(file) as CacheEntry<Value>
+    if (
+      expiration &&
+      Temporal.Instant.compare(
+        Temporal.Now.instant(),
+        Temporal.Instant.from(expiration)
+      ) === 1 // current instant is later than expiration instant
+    )
+      throw new CacheMissError(`useCache cache entry for ${key} expired`)
+    return value
+  } catch (e) {
+    if (!(e instanceof CacheMissError)) throw e
+    const value = await callback()
+    const expiration = options?.lifetime
+      ? Temporal.Now.instant().add(options.lifetime)
+      : undefined
+    await fs.mkdir(path.join(cachePath), { recursive: true })
+    await fs.writeFile(
+      path.join(cachePath, keyHash),
+      JSON.stringify({ expiration, value } as CacheEntry<Value>)
+    )
+    return value
+  }
 }
 
-const rateLimitedFetch: typeof fetch = (...args) =>
-  new Promise((res, rej) => {
-    throttleQueue.push(() =>
-      fetch(...args)
+/* -------------------------------------------------------------------------- */
+/*                              RESOURCE FETCHING                             */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Create a function that throttles an async operation.
+ * @param callback The async function to throttle
+ * @param timeMs The minimum time between function invocations
+ */
+export function createThrottled<Args extends any[], Return>(
+  callback: (...args: Args) => Promise<Return>,
+  timeMs: number
+): (...args: Args) => Promise<Return> {
+  let promise: Promise<void> = Promise.resolve()
+
+  return (...args) =>
+    new Promise((res, rej) => {
+      promise
+        .then(() => callback(...args))
         .then(res)
         .catch(rej)
-    )
-    void processQueue()
-  })
+
+      promise = promise.then(() => setTimeout(timeMs))
+    })
+}
+
+const MIN_WAIT_MS = 100
+const rateLimitedFetch: typeof fetch = createThrottled(fetch, MIN_WAIT_MS)
 
 /**
  * Get the document object from a URL.
