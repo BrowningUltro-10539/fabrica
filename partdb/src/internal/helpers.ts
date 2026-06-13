@@ -144,12 +144,12 @@ export async function useCache<Value extends JsonValue>(
     if (!(e instanceof CacheMissError)) throw e
     const value = await callback()
     const expiration = options?.lifetime
-      ? Temporal.Now.instant().add(options.lifetime)
+      ? Temporal.Now.instant().add(options.lifetime).toJSON()
       : undefined
     await fs.mkdir(path.join(cachePath), { recursive: true })
     await fs.writeFile(
       path.join(cachePath, keyHash),
-      JSON.stringify({ expiration, value } as CacheEntry<Value>)
+      JSON.stringify({ expiration, value } satisfies CacheEntry<Value>)
     )
     return value
   }

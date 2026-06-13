@@ -242,7 +242,7 @@ async function parseProductPage(
           (querySelectorStrict('meta[itemprop="image"]') as HTMLMetaElement)
             .content
         ).toString()
-      } as ExternalFile
+      } satisfies ExternalFile
 
       // for now i'll skip unpacking the STEP file.
 
