@@ -89,9 +89,15 @@ const rateLimitedFetch: typeof fetch = (...args) =>
   })
 
 /**
+ * Get the document object from a URL.
  *
- * @param siteURL URL to the site. Can either be the domain itself or a page on the website, like in an HTTP request.
+ * @param siteURL URL to the site.
+ * Can either be the domain itself or
+ * a page on the website (`/foo.html`, `/bar`),
+ * like in an HTTP request.
+ *
  * @param baseSite The base site. Do NOT include a trailing slash!
+ *
  * @returns A JSDOM-based document object
  */
 export async function getDocument(
