@@ -87,6 +87,11 @@ export async function useFile(
  */
 class CacheMissError extends Error {}
 
+export type CacheEntry<Value extends JsonValue> = {
+  expiration?: string
+  value: Value
+}
+
 /**
  * Cache a computation that produces a serializable value.
  * @param key Globally unique string representing the value
@@ -113,10 +118,6 @@ export async function useCache<Value extends JsonValue>(
 
   // within each file is a json blob containing
   // the value and the expiration date if provided.
-  type CacheEntry<Value extends JsonValue> = {
-    expiration?: string
-    value: Value
-  }
 
   try {
     // check cache
