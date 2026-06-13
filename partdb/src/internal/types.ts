@@ -45,7 +45,7 @@ export type LocalFile = {
  */
 export type ExternalFile = {
   type: 'external'
-  url: URL
+  url: string
 }
 
 export type File = LocalFile | ExternalFile
@@ -134,6 +134,6 @@ export type Product = {
   }
   cad?: {
     step?: File
-    onshape?: URL
+    onshape?: string
   }
 }

@@ -1,3 +1,3 @@
-import products from '../dist/products.json' with { type: 'json' }
+import { products } from '../dist/index.mjs'
 
 console.log(products.length)
