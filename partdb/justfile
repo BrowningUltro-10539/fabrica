@@ -2,7 +2,7 @@ default:
     @just --list
 
 build:
-    echo "dummy"
+    ./node_modules/.bin/tsdown --minify
 
 exec script:
     node --expose-gc '{{ script }}'
