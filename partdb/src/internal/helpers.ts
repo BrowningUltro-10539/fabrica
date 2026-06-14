@@ -38,6 +38,10 @@ const cachePath = path.join(
   'files'
 )
 
+await Promise.all([
+  fs.mkdir(dbPath, { recursive: true }),
+  fs.mkdir(cachePath, { recursive: true })
+])
 /**
  * Hook for creating files for object storage for the site.
  * This is most likely a STEP file.
