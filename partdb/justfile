@@ -1,6 +1,6 @@
 mod cache
 
-export NODE_OPTIONS := '--expose-gc'
+export NODE_OPTIONS := '--expose-gc --max-old-space-size=8192'
 
 default:
     @just --list
