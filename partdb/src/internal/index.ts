@@ -13,7 +13,7 @@ const adapters: Promise<Product[]>[] = []
 for await (const entry of dir) {
   if (entry.isFile())
     adapters.push(
-      import(path.join(entry.parentPath, entry.name)).then(
+      import(/* @vite-ignore */ path.join(entry.parentPath, entry.name)).then(
         (module) => module.default
       )
     )
