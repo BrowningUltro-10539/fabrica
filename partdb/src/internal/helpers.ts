@@ -181,15 +181,11 @@ export function createThrottled<Args extends any[], Return>(
 ): (...args: Args) => Promise<Return> {
   let promise: Promise<void> = Promise.resolve()
 
-  return (...args) =>
-    new Promise((res, rej) => {
-      promise
-        .then(() => callback(...args))
-        .then(res)
-        .catch(rej)
-
-      promise = promise.then(() => setTimeout(timeMs))
-    })
+  return (...args) => {
+    const promiseStart = promise
+    promise = promise.then(() => setTimeout(timeMs))
+    return promiseStart.then(() => callback(...args))
+  }
 }
 
 const MIN_WAIT_MS = 100
