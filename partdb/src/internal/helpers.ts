@@ -9,6 +9,7 @@ import url from 'node:url'
 import { JSDOM } from 'jsdom'
 import { setTimeout } from 'node:timers/promises'
 import type { JsonValue } from 'type-fest'
+import workerPool from './worker-pool.ts'
 
 /* -------------------------------------------------------------------------- */
 /*                                TYPE HELPERS                                */
@@ -230,16 +231,18 @@ export async function getDocument(
     { lifetime: Temporal.Duration.from({ hours: 24 }) }
   )
 
-  const { document } = new JSDOM(siteText).window
+  const siteBuffer = new TextEncoder().encode(siteText).buffer
 
-  const meta = document.querySelector(
-    'meta[http-equiv="refresh"]'
-  ) as HTMLMetaElement
-  if (meta) {
-    const { content } = meta
-    const newSiteURL = content.split(';url=')[1]
-    return getDocument(newSiteURL, baseSite)
-  }
+  const newSiteURL = await workerPool.sendTask(
+    {
+      operation: 'checkIfFinalSite',
+      input: { url: siteURL, siteBuffer }
+    },
+    [siteBuffer]
+  )
+  if (newSiteURL !== siteURL) return getDocument(newSiteURL, baseSite)
+
+  const { document } = new JSDOM(siteText).window
 
   return { document, finalSite: siteURL }
 }
