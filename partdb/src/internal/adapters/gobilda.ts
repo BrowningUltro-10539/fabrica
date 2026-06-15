@@ -155,22 +155,22 @@ const parsedCategoryPages: string[] = []
  * @param page Category page
  * @returns URLs to product pages
  */
-function parseCategoryPage(page: string): Promise<string[]> {
+async function parseCategoryPage(page: string): Promise<string[]> {
+  console.log(`Doing category page ${page}`)
+  const { document, finalSite } = await getDocument(page, GOBILDA_SITE)
+
+  if (parsedCategoryPages.includes(finalSite)) {
+    console.log(
+      `Category page ${finalSite} (originally ${page}) already parsed!`
+    )
+    return []
+  }
+  parsedCategoryPages.push(finalSite)
+  console.log(`Category page ${finalSite} retrieved! Getting links...`)
+
   return useCache(
-    `product pages from goBILDA page ${page}`,
-    async () => {
-      console.log(`Doing category page ${page}`)
-      const { document, finalSite } = await getDocument(page, GOBILDA_SITE)
-
-      if (parsedCategoryPages.includes(finalSite)) {
-        console.log(
-          `Category page ${finalSite} (originally ${page}) already parsed!`
-        )
-        return []
-      }
-      parsedCategoryPages.push(finalSite)
-
-      console.log(`Category page ${finalSite} retrieved! Getting links...`)
+    `product pages from goBILDA page ${finalSite}`,
+    () => {
       const links = [...document.querySelectorAll('li.product')]
         // rudimentary filter for cards that redirect to another category page
         .filter(
@@ -199,25 +199,22 @@ async function parseProductPage(
   productURL: string,
   keywords: Keyword[]
 ): Promise<Product | null> {
+  console.log(`Doing product page ${productURL}`)
+  const { document, finalSite } = await getDocument(productURL, GOBILDA_SITE)
+  if (
+    parsedProductPages.includes(finalSite) ||
+    parsedCategoryPages.includes(finalSite)
+  ) {
+    console.log(
+      `Product page ${finalSite} (originally ${productURL}) already parsed!`
+    )
+    return null
+  }
+  parsedProductPages.push(finalSite)
+
   return useCache(
     `products from goBILDA page ${productURL}`,
     async () => {
-      console.log(`Doing product page ${productURL}`)
-      const { document, finalSite } = await getDocument(
-        productURL,
-        GOBILDA_SITE
-      )
-      if (
-        parsedProductPages.includes(finalSite) ||
-        parsedCategoryPages.includes(finalSite)
-      ) {
-        console.log(
-          `Product page ${finalSite} (originally ${productURL}) already parsed!`
-        )
-        return null
-      }
-      parsedProductPages.push(finalSite)
-
       const querySelectorStrict = (query: string): Element => {
         const node = document.querySelector(query)
         if (!node)
