@@ -77,7 +77,6 @@ export async function useFile(
     name = hasher.digest('base64url')
   }
 
-  await fs.mkdir(dbPath, { recursive: true })
   await fs.copyFile(filePath, path.join(dbPath, name))
 
   return {
@@ -95,6 +94,9 @@ export type CacheEntry<Value extends JsonValue> = {
   expiration?: string
   value: Value
 }
+
+const memoryCache: Record<string, JsonValue> = Object.create(null)
+const SIZE_THRESHOLD = 50_000
 
 /**
  * Cache a computation that produces a serializable value.
@@ -119,6 +121,7 @@ export async function useCache<Value extends JsonValue>(
   // but i'm too lazy to make it myself or
   // import another library.
   const keyHash = crypto.createHash('sha256').update(key).digest('base64url')
+  if (keyHash in memoryCache) return memoryCache[keyHash] as Value
 
   // within each file is a json blob containing
   // the value and the expiration date if provided.
@@ -144,6 +147,8 @@ export async function useCache<Value extends JsonValue>(
       ) === 1 // current instant is later than expiration instant
     )
       throw new CacheMissError(`useCache cache entry for ${key} expired`)
+    if (JSON.stringify(value).length < SIZE_THRESHOLD)
+      memoryCache[keyHash] = value
     return value
   } catch (e) {
     if (!(e instanceof CacheMissError)) throw e
@@ -151,7 +156,8 @@ export async function useCache<Value extends JsonValue>(
     const expiration = options?.lifetime
       ? Temporal.Now.instant().add(options.lifetime).toJSON()
       : undefined
-    await fs.mkdir(path.join(cachePath), { recursive: true })
+    if (JSON.stringify(value).length < SIZE_THRESHOLD)
+      memoryCache[keyHash] = value
     await fs.writeFile(
       path.join(cachePath, keyHash),
       JSON.stringify({ expiration, value } satisfies CacheEntry<Value>)
