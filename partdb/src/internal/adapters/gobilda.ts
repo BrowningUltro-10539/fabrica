@@ -118,9 +118,6 @@ function getPages(
   return result
     .reduce(
       (acc, val) => {
-        // Remove duplicate keywords
-        val.keywords = [...new Set(val.keywords)]
-
         const valIndex = acc
           .map((category) => category.pageUrl)
           .indexOf(val.pageUrl)
@@ -128,7 +125,9 @@ function getPages(
         if (valIndex === -1) {
           acc.push(val)
         } else {
-          acc[valIndex].keywords.push()
+          acc[valIndex].keywords = [
+            ...new Set([...acc[valIndex].keywords, ...val.keywords])
+          ]
         }
 
         return acc
