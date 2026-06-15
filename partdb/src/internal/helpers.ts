@@ -209,20 +209,28 @@ export async function getDocument(
 ): Promise<{ document: Document; finalSite: string }> {
   if (siteURL.startsWith('/')) siteURL = baseSite + siteURL
 
-  console.log(`Fetching ${siteURL}...`)
+  const siteText = await useCache(
+    `Site text for ${siteURL}`,
+    async () => {
+      console.log(`Fetching ${siteURL}...`)
 
-  const site = await rateLimitedFetch(siteURL, {
-    headers: {
-      'User-Agent': 'FTC 10539 (Ultro) Internal Project <ultro.browning.edu>'
-    }
-  })
+      const site = await rateLimitedFetch(siteURL, {
+        headers: {
+          'User-Agent':
+            'FTC 10539 (Ultro) Internal Project <ultro.browning.edu>'
+        }
+      })
 
-  if (!site.ok)
-    throw Error(
-      `Request failed (${site.status} ${site.statusText}): ${await site.text()}`
-    )
+      if (!site.ok)
+        throw Error(
+          `Request failed (${site.status} ${site.statusText}): ${await site.text()}`
+        )
+      return await site.text()
+    },
+    { lifetime: Temporal.Duration.from({ hours: 24 }) }
+  )
 
-  const { document } = new JSDOM(await site.text()).window
+  const { document } = new JSDOM(siteText).window
 
   const meta = document.querySelector(
     'meta[http-equiv="refresh"]'
