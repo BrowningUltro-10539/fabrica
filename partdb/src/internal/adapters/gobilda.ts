@@ -33,6 +33,7 @@ async function main(): Promise<Product[]> {
   await Promise.all(
     pages.map(async ({ pageUrl, keywords }) => {
       const productPages = await parseCategoryPage(pageUrl)
+      if (global) global.gc?.()
       return await Promise.all(
         productPages.map(async (productPage) => {
           let product: Product | null = null
