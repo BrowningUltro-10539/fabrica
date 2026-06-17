@@ -31,7 +31,20 @@ export class WorkerPool {
           this.#queue.push(attempt)
           return
         }
-        idleEnt.workerObj.postMessage(task, transferList)
+        try {
+          idleEnt.workerObj.postMessage(task, transferList)
+        } catch (e) {
+          throw Error(
+            `intercepted error from posting message ${JSON.stringify(
+              task,
+              (_, value) => {
+                if (value instanceof ArrayBuffer)
+                  return `ArrayBuffer: ${new TextDecoder().decode(value)}`
+                return value
+              }
+            )}: ${(e as Error).message}`
+          )
+        }
         idleEnt.status = 'running'
         idleEnt.workerObj.once('message', (result) => {
           idleEnt.status = 'idle'
