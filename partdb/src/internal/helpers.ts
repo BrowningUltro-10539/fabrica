@@ -313,3 +313,46 @@ export async function getDocument(
 
   return { document, finalSite: siteURL }
 }
+
+export async function getFinalSite(
+  siteURL: string,
+  baseSite: string,
+  fetcher: typeof fetch
+): Promise<{ finalSiteBuffer: ArrayBuffer; finalSite: string }> {
+  if (siteURL.startsWith('/')) siteURL = baseSite + siteURL
+
+  const siteBuffer = await useCache(
+    `Site buffer for ${siteURL}`,
+    async () => {
+      console.log(`Fetching ${siteURL}...`)
+
+      const site = await fetcher(siteURL, {
+        headers: {
+          'User-Agent':
+            'FTC 10539 (Ultro) Internal Project <ultro.browning.edu>'
+        }
+      })
+
+      if (!site.ok)
+        throw Error(
+          `Request failed (${site.status} ${site.statusText}): ${await site.text()}`
+        )
+      return site.arrayBuffer()
+    },
+    { lifetime: Temporal.Duration.from({ hours: 24 }) }
+  )
+
+  const newSiteURL = await workerPool.sendTask(
+    {
+      operation: 'checkIfFinalSite',
+      input: { url: siteURL, siteBuffer }
+    },
+    [siteBuffer]
+  )
+  if (newSiteURL !== siteURL) return getFinalSite(newSiteURL, baseSite, fetcher)
+  // note to future self: this *could* be optimized in the future by
+  // somehow reusing the worker's cheerio instance and
+  // not having to keep on disposing and rebuilding doms.
+
+  return { finalSiteBuffer: siteBuffer, finalSite: siteURL }
+}
