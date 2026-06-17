@@ -46,13 +46,14 @@ const taskMap: HandlerMap = {
   ...goBILDA.handleMessage
 }
 
-parentPort?.on(
-  'message',
-  <T extends Method>(task: Task<T>): ReturnValue<T> | Error => {
-    const handler = taskMap[task.operation] as
-      | ((input: typeof task.input) => ReturnValue<Method>)
-      | undefined
+parentPort?.on('message', <T extends Method>(task: Task<T>): void => {
+  const handler = taskMap[task.operation] as
+    | ((input: typeof task.input) => ReturnValue<Method>)
+    | undefined
 
-    return handler?.(task.input) ?? TypeError('operation not known')
-  }
-)
+  parentPort?.postMessage(
+    (handler?.(task.input) ?? TypeError('operation not known')) satisfies
+      | ReturnValue<T>
+      | Error
+  )
+})
