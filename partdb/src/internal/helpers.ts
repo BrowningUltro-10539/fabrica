@@ -51,7 +51,8 @@ const cacheBlobPath = path.join(
 
 await Promise.all([
   fs.mkdir(dbPath, { recursive: true }),
-  fs.mkdir(cachePath, { recursive: true })
+  fs.mkdir(cachePath, { recursive: true }),
+  fs.mkdir(cacheBlobPath, { recursive: true })
 ])
 /**
  * Hook for creating files for object storage for the site.
