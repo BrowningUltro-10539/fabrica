@@ -4,7 +4,10 @@ import * as cheerio from 'cheerio'
 
 import * as goBILDA from './gobilda.ts'
 
-export type Method = CheckIfFinalSite | goBILDA.GetCategoryPages
+export type Method =
+  | CheckIfFinalSite
+  | goBILDA.GetCategoryPages
+  | goBILDA.GetProductPages
 export type Task<T extends Method> = T extends Method
   ? Omit<T, 'return'>
   : never
