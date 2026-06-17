@@ -305,6 +305,9 @@ export async function getDocument(
     [siteBuffer]
   )
   if (newSiteURL !== siteURL) return getDocument(newSiteURL, baseSite)
+  // note to future self: this *could* be optimized in the future by
+  // somehow reusing the worker's cheerio instance and
+  // not having to keep on disposing and rebuilding doms.
 
   const { document } = new JSDOM(siteBuffer).window
 
