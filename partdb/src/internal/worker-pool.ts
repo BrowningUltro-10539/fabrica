@@ -3,7 +3,7 @@ import path from 'node:path'
 import { Worker } from 'node:worker_threads'
 import type { Transferable } from 'node:worker_threads'
 export type * from './worker/index.ts'
-import type { Task, ReturnValue } from './worker/index.ts'
+import type { Task, Method, ReturnValue } from './worker/index.ts'
 
 type WorkerEntry = { workerObj: Worker; status: 'idle' | 'running' }
 
@@ -20,8 +20,8 @@ export class WorkerPool {
     }))
   }
 
-  sendTask = <T extends Task>(
-    task: T,
+  sendTask = <T extends Method>(
+    task: Task<T>,
     transferList?: readonly Transferable[]
   ): Promise<ReturnValue<T>> =>
     new Promise((res, rej) => {
