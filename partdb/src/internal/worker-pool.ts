@@ -14,7 +14,7 @@ export class WorkerPool {
   constructor(numWorkers: number) {
     this.#workers = Array.from({ length: numWorkers }, () => ({
       workerObj: new Worker(
-        path.join(import.meta.dirname, 'worker', 'index.js')
+        path.join(import.meta.dirname, 'worker', 'index.ts')
       ),
       status: 'idle'
     }))
