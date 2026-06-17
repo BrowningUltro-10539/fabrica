@@ -2,7 +2,7 @@ import { parentPort } from 'node:worker_threads'
 
 import * as cheerio from 'cheerio'
 
-import * as goBILDA from './gobilda.ts'
+import * as goBILDA from './org.gobilda.ts'
 
 export type Method =
   | CheckIfFinalSite
