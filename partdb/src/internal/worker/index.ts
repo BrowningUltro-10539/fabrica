@@ -1,5 +1,7 @@
 import { parentPort } from 'node:worker_threads'
+
 import * as cheerio from 'cheerio'
+
 import * as goBILDA from './gobilda.ts'
 
 export type Method = CheckIfFinalSite | goBILDA.GetCategoryPages

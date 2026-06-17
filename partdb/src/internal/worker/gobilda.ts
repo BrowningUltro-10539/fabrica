@@ -1,5 +1,6 @@
-import type { Keyword } from '../types.ts'
 import * as cheerio from 'cheerio'
+
+import type { Keyword } from '../types.ts'
 
 export type GetCategoryPages = {
   operation: 'org.gobilda.getCategoryPages'

@@ -2,5 +2,6 @@
   "ignorePatterns": ["pnpm-lock.yaml", "pnpm-workspace.yaml"],
   "singleQuote": true,
   "semi": false,
+  "sortImports": true,
   "trailingComma": "none"
 }
