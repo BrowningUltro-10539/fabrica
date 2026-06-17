@@ -7,7 +7,6 @@ import stream from 'node:stream/promises'
 import { setTimeout } from 'node:timers/promises'
 import url from 'node:url'
 
-import { JSDOM } from 'jsdom'
 import type { JsonValue } from 'type-fest'
 
 import type { LocalFile, Product } from './types.ts'
@@ -259,7 +258,7 @@ export function createThrottled<Args extends any[], Return>(
 }
 
 /**
- * Get the document object from a URL.
+ * Get the final site and its buffer from a URL.
  *
  * @param siteURL URL to the site.
  * Can either be the domain itself or
@@ -268,53 +267,8 @@ export function createThrottled<Args extends any[], Return>(
  *
  * @param baseSite The base site. Do NOT include a trailing slash!
  *
- * @returns A JSDOM-based document object
+ * @returns An ArrayBuffer of the final site and a string of its URL
  */
-export async function getDocument(
-  siteURL: string,
-  baseSite: string,
-  fetcher: typeof fetch
-): Promise<{ document: Document; finalSite: string }> {
-  if (siteURL.startsWith('/')) siteURL = baseSite + siteURL
-
-  const siteBuffer = await useCache(
-    `Site buffer for ${siteURL}`,
-    async () => {
-      console.log(`Fetching ${siteURL}...`)
-
-      const site = await fetcher(siteURL, {
-        headers: {
-          'User-Agent':
-            'FTC 10539 (Ultro) Internal Project <ultro.browning.edu>'
-        }
-      })
-
-      if (!site.ok)
-        throw Error(
-          `Request failed (${site.status} ${site.statusText}): ${await site.text()}`
-        )
-      return await site.arrayBuffer()
-    },
-    { lifetime: Temporal.Duration.from({ hours: 24 }) }
-  )
-
-  const newSiteURL = await workerPool.sendTask<CheckIfFinalSite>(
-    {
-      operation: 'checkIfFinalSite',
-      input: { url: siteURL, siteBuffer }
-    },
-    [siteBuffer]
-  )
-  if (newSiteURL !== siteURL) return getDocument(newSiteURL, baseSite, fetcher)
-  // note to future self: this *could* be optimized in the future by
-  // somehow reusing the worker's cheerio instance and
-  // not having to keep on disposing and rebuilding doms.
-
-  const { document } = new JSDOM(siteBuffer).window
-
-  return { document, finalSite: siteURL }
-}
-
 export async function getFinalSite(
   siteURL: string,
   baseSite: string,
