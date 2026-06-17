@@ -1,14 +1,16 @@
+import crypto from 'node:crypto'
 import type { FileHandle } from 'node:fs/promises'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import type { LocalFile, Product } from './types.ts'
-import crypto from 'node:crypto'
 import stream from 'node:stream/promises'
-import url from 'node:url'
-import { JSDOM } from 'jsdom'
 import { setTimeout } from 'node:timers/promises'
+import url from 'node:url'
+
+import { JSDOM } from 'jsdom'
 import type { JsonValue } from 'type-fest'
+
+import type { LocalFile, Product } from './types.ts'
 import type { CheckIfFinalSite } from './worker-pool.ts'
 import workerPool from './worker-pool.ts'
 

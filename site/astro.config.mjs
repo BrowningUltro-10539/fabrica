@@ -1,9 +1,7 @@
+import solidJs from '@astrojs/solid-js'
+import tailwindcss from '@tailwindcss/vite'
 // @ts-check
-import { defineConfig } from 'astro/config';
-
-import solidJs from '@astrojs/solid-js';
-
-import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from 'astro/config'
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,4 +10,4 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()]
   }
-});
+})

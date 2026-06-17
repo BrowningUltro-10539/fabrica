@@ -1,3 +1,5 @@
+import crypto from 'node:crypto'
+
 /**
  * The goBILDA site seems to be scrapable most easily by
  * looking at their sitemap,
@@ -13,7 +15,6 @@ import {
   rateLimitedFetch
 } from '../helpers.ts'
 import type { ExternalFile, Keyword, Product } from '../types.ts'
-import crypto from 'node:crypto'
 import workerPool from '../worker-pool.ts'
 import type { GetCategoryPages } from '../worker/gobilda.ts'
 
