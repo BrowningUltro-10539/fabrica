@@ -276,8 +276,8 @@ export async function getDocument(
 ): Promise<{ document: Document; finalSite: string }> {
   if (siteURL.startsWith('/')) siteURL = baseSite + siteURL
 
-  const siteText = await useCache(
-    `Site text for ${siteURL}`,
+  const siteBuffer = await useCache(
+    `Site buffer for ${siteURL}`,
     async () => {
       console.log(`Fetching ${siteURL}...`)
 
@@ -292,12 +292,10 @@ export async function getDocument(
         throw Error(
           `Request failed (${site.status} ${site.statusText}): ${await site.text()}`
         )
-      return await site.text()
+      return await site.arrayBuffer()
     },
     { lifetime: Temporal.Duration.from({ hours: 24 }) }
   )
-
-  const siteBuffer = new TextEncoder().encode(siteText).buffer
 
   const newSiteURL = await workerPool.sendTask(
     {
@@ -308,7 +306,7 @@ export async function getDocument(
   )
   if (newSiteURL !== siteURL) return getDocument(newSiteURL, baseSite)
 
-  const { document } = new JSDOM(siteText).window
+  const { document } = new JSDOM(siteBuffer).window
 
   return { document, finalSite: siteURL }
 }
