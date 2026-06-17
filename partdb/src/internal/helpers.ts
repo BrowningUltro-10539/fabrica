@@ -258,12 +258,6 @@ export function createThrottled<Args extends any[], Return>(
   }
 }
 
-const MIN_WAIT_MS = 100
-export const rateLimitedFetch: typeof fetch = createThrottled(
-  fetch,
-  MIN_WAIT_MS
-)
-
 /**
  * Get the document object from a URL.
  *
@@ -278,7 +272,8 @@ export const rateLimitedFetch: typeof fetch = createThrottled(
  */
 export async function getDocument(
   siteURL: string,
-  baseSite: string
+  baseSite: string,
+  fetcher: typeof fetch
 ): Promise<{ document: Document; finalSite: string }> {
   if (siteURL.startsWith('/')) siteURL = baseSite + siteURL
 
@@ -287,7 +282,7 @@ export async function getDocument(
     async () => {
       console.log(`Fetching ${siteURL}...`)
 
-      const site = await rateLimitedFetch(siteURL, {
+      const site = await fetcher(siteURL, {
         headers: {
           'User-Agent':
             'FTC 10539 (Ultro) Internal Project <ultro.browning.edu>'
@@ -310,7 +305,7 @@ export async function getDocument(
     },
     [siteBuffer]
   )
-  if (newSiteURL !== siteURL) return getDocument(newSiteURL, baseSite)
+  if (newSiteURL !== siteURL) return getDocument(newSiteURL, baseSite, fetcher)
   // note to future self: this *could* be optimized in the future by
   // somehow reusing the worker's cheerio instance and
   // not having to keep on disposing and rebuilding doms.

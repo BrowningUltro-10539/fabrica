@@ -12,13 +12,16 @@ import {
   useFile,
   useCache,
   getFinalSite,
-  rateLimitedFetch
+  createThrottled
 } from '../helpers.ts'
 import type { ExternalFile, Keyword, Product } from '../types.ts'
 import workerPool from '../worker-pool.ts'
 import type { GetCategoryPages } from '../worker/gobilda.ts'
 
 const GOBILDA_SITE = 'https://www.gobilda.com'
+const MIN_WAIT_MS = 100
+
+const rateLimitedFetch: typeof fetch = createThrottled(fetch, MIN_WAIT_MS)
 
 async function main(): Promise<Product[]> {
   const sitemapPagesKey = 'pages from goBILDA sitemap'
@@ -88,7 +91,11 @@ const parsedCategoryPages: string[] = []
  */
 async function parseCategoryPage(page: string): Promise<string[]> {
   console.log(`Doing category page ${page}`)
-  const { document, finalSite } = await getDocument(page, GOBILDA_SITE)
+  const { document, finalSite } = await getDocument(
+    page,
+    GOBILDA_SITE,
+    rateLimitedFetch
+  )
 
   if (parsedCategoryPages.includes(finalSite)) {
     console.log(
@@ -131,7 +138,11 @@ async function parseProductPage(
   keywords: Keyword[]
 ): Promise<Product | null> {
   console.log(`Doing product page ${productURL}`)
-  const { document, finalSite } = await getDocument(productURL, GOBILDA_SITE)
+  const { document, finalSite } = await getDocument(
+    productURL,
+    GOBILDA_SITE,
+    rateLimitedFetch
+  )
   if (
     parsedProductPages.includes(finalSite) ||
     parsedCategoryPages.includes(finalSite)
