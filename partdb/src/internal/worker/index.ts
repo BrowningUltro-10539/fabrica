@@ -8,6 +8,7 @@ export type Method =
   | CheckIfFinalSite
   | goBILDA.GetCategoryPages
   | goBILDA.GetProductPages
+  | goBILDA.GetProductData
 export type Task<T extends Method> = T extends Method
   ? Omit<T, 'return'>
   : never

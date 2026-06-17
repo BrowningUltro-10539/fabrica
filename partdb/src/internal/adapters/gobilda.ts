@@ -8,16 +8,16 @@ import crypto from 'node:crypto'
  */
 import {
   defineAdapter,
-  getDocument,
   useFile,
   useCache,
   getFinalSite,
   createThrottled
 } from '../helpers.ts'
-import type { ExternalFile, Keyword, Product } from '../types.ts'
+import type { Keyword, Product } from '../types.ts'
 import workerPool from '../worker-pool.ts'
 import type {
   GetCategoryPages,
+  GetProductData,
   GetProductPages
 } from '../worker/org.gobilda.ts'
 
@@ -135,7 +135,7 @@ async function parseProductPage(
   keywords: Keyword[]
 ): Promise<Product | null> {
   console.log(`Doing product page ${productURL}`)
-  const { document, finalSite } = await getDocument(
+  const { finalSiteBuffer, finalSite } = await getFinalSite(
     productURL,
     GOBILDA_SITE,
     rateLimitedFetch
@@ -153,73 +153,24 @@ async function parseProductPage(
 
   return useCache(
     `products from goBILDA page ${productURL}`,
-    async () => {
-      const querySelectorStrict = (query: string): Element => {
-        const node = document.querySelector(query)
-        if (!node)
-          throw Error(
-            `querySelector failed for ${query} for product ${productURL}`
-          )
-        return node
-      }
-
-      const name = (
-        querySelectorStrict('meta[itemprop="name"]') as HTMLMetaElement
-      ).content
-      const sku =
-        `com.gobilda.${(querySelectorStrict('meta[itemprop="sku"]') as HTMLMetaElement).content}` as `com.gobilda.${string}`
-      const description = (
-        querySelectorStrict('meta[itemprop="description"]') as HTMLMetaElement
-      ).content
-      // TODO add logic for adding more keywords
-      const image = {
-        type: 'external',
-        url: new URL(
-          (querySelectorStrict('meta[itemprop="image"]') as HTMLMetaElement)
-            .content
-        ).toString()
-      } satisfies ExternalFile
-
-      // for now i'll skip unpacking the STEP file.
-
-      // Note for weight:
-      // goBILDA usually puts weight in grams, but
-      // sometimes include extra explanatory text.
-      //
-      // Therefore, we do some dumb logic,
-      // extracting only the first numeric characters rather than
-      // `parseInt`-ing the whole string.
-      let weight = ''
-      for (const char of [
-        // oxlint-disable-next-line typescript/no-misused-spread
-        ...(querySelectorStrict('meta[itemprop="weight"]') as HTMLMetaElement)
-          .content
-      ]) {
-        if (
-          !['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'].includes(
-            char
-          )
+    () => {
+      try {
+        return workerPool.sendTask<GetProductData>(
+          {
+            operation: 'org.gobilda.getProductData',
+            input: {
+              siteBuffer: finalSiteBuffer,
+              keywords
+            }
+          },
+          [finalSiteBuffer]
         )
-          break
-        weight += char
-      }
-
-      const additionalSpecs = Object.fromEntries(
-        [...document.querySelectorAll('tr.product-specsTable-row')].map(
-          (el) => [
-            `com.gobilda.${el.children[0].textContent}`,
-            el.children[1].textContent
-          ]
-        )
-      )
-
-      return {
-        name,
-        sku,
-        description,
-        image,
-        keywords,
-        specifications: { weight: Number(weight), ...additionalSpecs }
+      } catch (e) {
+        if (e instanceof TypeError)
+          throw TypeError(
+            `Type error when parsing product page ${finalSite} (originally ${productURL}): ${e.message}`
+          )
+        throw e
       }
     },
     { lifetime: Temporal.Duration.from({ hours: 24 }) }
