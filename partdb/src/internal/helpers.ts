@@ -9,6 +9,7 @@ import url from 'node:url'
 import { JSDOM } from 'jsdom'
 import { setTimeout } from 'node:timers/promises'
 import type { JsonValue } from 'type-fest'
+import type { CheckIfFinalSite } from './worker-pool.ts'
 import workerPool from './worker-pool.ts'
 
 /* -------------------------------------------------------------------------- */
@@ -256,7 +257,10 @@ export function createThrottled<Args extends any[], Return>(
 }
 
 const MIN_WAIT_MS = 100
-const rateLimitedFetch: typeof fetch = createThrottled(fetch, MIN_WAIT_MS)
+export const rateLimitedFetch: typeof fetch = createThrottled(
+  fetch,
+  MIN_WAIT_MS
+)
 
 /**
  * Get the document object from a URL.
@@ -297,7 +301,7 @@ export async function getDocument(
     { lifetime: Temporal.Duration.from({ hours: 24 }) }
   )
 
-  const newSiteURL = await workerPool.sendTask(
+  const newSiteURL = await workerPool.sendTask<CheckIfFinalSite>(
     {
       operation: 'checkIfFinalSite',
       input: { url: siteURL, siteBuffer }
@@ -342,7 +346,7 @@ export async function getFinalSite(
     { lifetime: Temporal.Duration.from({ hours: 24 }) }
   )
 
-  const newSiteURL = await workerPool.sendTask(
+  const newSiteURL = await workerPool.sendTask<CheckIfFinalSite>(
     {
       operation: 'checkIfFinalSite',
       input: { url: siteURL, siteBuffer }

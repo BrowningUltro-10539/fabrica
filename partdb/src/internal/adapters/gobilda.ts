@@ -4,23 +4,47 @@
  * finding each of the most nested pages, and
  * turning each of the products on each page into an appropriate entry.
  */
-import { defineAdapter, getDocument, useFile, useCache } from '../helpers.ts'
+import {
+  defineAdapter,
+  getDocument,
+  useFile,
+  useCache,
+  getFinalSite,
+  rateLimitedFetch
+} from '../helpers.ts'
 import type { ExternalFile, Keyword, Product } from '../types.ts'
 import crypto from 'node:crypto'
+import workerPool from '../worker-pool.ts'
+import type { GetCategoryPages } from '../worker/gobilda.ts'
 
 const GOBILDA_SITE = 'https://www.gobilda.com'
 
 async function main(): Promise<Product[]> {
   const sitemapPagesKey = 'pages from goBILDA sitemap'
 
-  const pages = await useCache(
+  const pages: Array<{ pageUrl: string; keywords: Keyword[] }> = await useCache(
     sitemapPagesKey,
     async () => {
-      const { document } = await getDocument(
+      // const { document } = await getDocument(
+      //   'https://www.gobilda.com/sitemap/categories',
+      //   GOBILDA_SITE
+      // )
+      // return getPages(document.querySelector('div.body > div.container > ul')!)
+      const { finalSiteBuffer } = await getFinalSite(
         'https://www.gobilda.com/sitemap/categories',
-        GOBILDA_SITE
+        GOBILDA_SITE,
+        rateLimitedFetch
       )
-      return getPages(document.querySelector('div.body > div.container > ul')!)
+
+      return workerPool.sendTask<GetCategoryPages>(
+        {
+          operation: 'org.gobilda.getCategoryPages',
+          input: {
+            siteBuffer: finalSiteBuffer
+          }
+        },
+        [finalSiteBuffer]
+      )
     },
     { lifetime: Temporal.Duration.from({ hours: 7 * 24 }) }
   )
@@ -52,100 +76,6 @@ async function main(): Promise<Product[]> {
   )
 
   return products
-}
-
-function getPages(
-  root: HTMLUListElement
-): Array<{ pageUrl: string; keywords: Keyword[] }> {
-  // if i was lazy i'd regex this
-
-  const exactMappings: Record<string, Keyword[]> = {
-    'goRAIL®': ['extrusion'],
-    'ServoBlocks®': ['mount']
-  }
-
-  // TODO improve logic & move out into helpers.ts
-  const matchables: Keyword[] = [
-    'motor',
-    'servo',
-    'actuator',
-    'channel',
-    'extrusion',
-    'bearing',
-    'shaft',
-    'gear'
-  ]
-
-  const matchKeywords = (text: string): Keyword[] => [
-    ...(exactMappings[text] ?? []),
-    ...matchables.filter((word) => text.toLowerCase().includes(word))
-  ]
-
-  const result = []
-  for (const li of root.children) {
-    // <li> only containing a single child means that it has maximum nesting
-    if (li.children.length === 1) {
-      const a = li.children[0] as HTMLAnchorElement
-
-      // TODO more extensive filtering
-      if (
-        ['bundle', 'see'].some((word) =>
-          a.textContent.toLowerCase().includes(word)
-        )
-      )
-        continue
-      result.push({
-        pageUrl: a.href,
-        keywords: matchKeywords(a.textContent.trim())
-      })
-    } else {
-      // <li> containing multiple children means that
-      // the first element is <a>, while
-      // the second element is another <ul> list.
-      // However, matches for keywords need to propagate to the children.
-      const a = li.children[0] as HTMLAnchorElement
-      result.push(
-        ...getPages(li.children[1] as HTMLUListElement).map((item) => {
-          item.keywords.push(...matchKeywords(a.textContent.trim()))
-          return item
-        })
-      )
-    }
-  }
-
-  // Clean up results so that there are no more
-  // duplicate pages and keywords
-  return result
-    .reduce(
-      (acc, val) => {
-        const valIndex = acc
-          .map((category) => category.pageUrl)
-          .indexOf(val.pageUrl)
-
-        if (valIndex === -1) {
-          acc.push(val)
-        } else {
-          acc[valIndex].keywords = [
-            ...new Set([...acc[valIndex].keywords, ...val.keywords])
-          ]
-        }
-
-        return acc
-      },
-      [] as Array<{ pageUrl: string; keywords: Keyword[] }>
-    )
-    .filter(
-      ({ pageUrl }) =>
-        ![
-          'bundle',
-          'kit',
-          'merch',
-          'lubricant',
-          'connector',
-          'wire',
-          'thread'
-        ].some((word) => pageUrl.includes(word))
-    )
 }
 
 const parsedCategoryPages: string[] = []
