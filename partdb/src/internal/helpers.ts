@@ -122,6 +122,14 @@ export type ArrayBufferEntry = {
 const memoryCache: Record<string, Cacheable> = Object.create(null)
 const SIZE_THRESHOLD = 50_000
 
+const fileWriters: Record<string, Promise<void>> = Object.create(null)
+const writeFile = (filePath: string, data: string | Buffer): Promise<void> => {
+  if (filePath in fileWriters)
+    return fileWriters[filePath].then(() => fs.writeFile(filePath, data))
+  fileWriters[filePath] = fs.writeFile(filePath, data)
+  return fileWriters[filePath]
+}
+
 /**
  * Cache a computation that produces a serializable value.
  * @param key Globally unique string representing the value
@@ -204,7 +212,7 @@ export async function useCache<Value extends Cacheable>(
     if (!(value instanceof ArrayBuffer)) {
       if (JSON.stringify(value).length < SIZE_THRESHOLD)
         memoryCache[keyHash] = value
-      await fs.writeFile(
+      await writeFile(
         path.join(cachePath, keyHash),
         JSON.stringify({
           expiration,
@@ -220,7 +228,7 @@ export async function useCache<Value extends Cacheable>(
         .update(Buffer.from(value))
         .digest('base64url')
       await Promise.all([
-        fs.writeFile(
+        writeFile(
           path.join(cachePath, keyHash),
           JSON.stringify({
             expiration,
@@ -228,7 +236,7 @@ export async function useCache<Value extends Cacheable>(
             blob: valueHash
           } satisfies ArrayBufferEntry)
         ),
-        fs.writeFile(path.join(cacheBlobPath, valueHash), Buffer.from(value))
+        writeFile(path.join(cacheBlobPath, valueHash), Buffer.from(value))
       ])
     }
     return value
