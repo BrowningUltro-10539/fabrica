@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio'
 
-import type { Keyword } from '../types.ts'
+import type { ExternalFile, Keyword, Product } from '../types.ts'
 
 export type GetCategoryPages = {
   operation: 'org.gobilda.getCategoryPages'
@@ -16,6 +16,15 @@ export type GetProductPages = {
     siteBuffer: ArrayBuffer
   }
   return: string[]
+}
+
+export type GetProductData = {
+  operation: 'org.gobilda.getProductData'
+  input: {
+    siteBuffer: ArrayBuffer
+    keywords: Keyword[]
+  }
+  return: Product | null
 }
 
 const getPages = (
@@ -132,5 +141,66 @@ export const handleMessage = {
       .map((_, li) => $(li).find('a').attr('href'))
       .toArray()
     return links
+  },
+  'org.gobilda.getProductData': ({
+    siteBuffer,
+    keywords
+  }: GetProductData['input']) => {
+    const $ = cheerio.load(Buffer.from(siteBuffer))
+    const $strict: typeof $ = ((...query) => {
+      const el = $(...query)
+      if (el.length === 0)
+        throw TypeError(
+          `querySelector failed for query ${JSON.stringify(query)}`
+        )
+      return el
+    }) as typeof $
+
+    const name = $strict('meta[itemprop="name"]').prop('content')
+    const sku =
+      `com.gobilda.${$strict('meta[itemprop="sku"]').prop('content')}` as `com.gobilda.${string}`
+    const description = $strict('meta[itemprop="description"]').prop('content')
+    // TODO add logic for adding more keywords
+    const image = {
+      type: 'external',
+      url: new URL($strict('meta[itemprop="image"]').prop('content')).toString()
+    } satisfies ExternalFile
+
+    // for now i'll skip unpacking the STEP file.
+
+    // Note for weight:
+    // goBILDA usually puts weight in grams, but
+    // sometimes include extra explanatory text.
+    //
+    // Therefore, we do some dumb logic,
+    // extracting only the first numeric characters rather than
+    // `parseInt`-ing the whole string.
+    let weight = ''
+    for (const char of [
+      // oxlint-disable-next-line typescript/no-misused-spread
+      ...$strict('meta[itemprop="weight"]').prop('content')
+    ]) {
+      if (
+        !['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'].includes(char)
+      )
+        break
+      weight += char
+    }
+
+    const additionalSpecs = Object.fromEntries(
+      [...$('tr.product-specsTable-row')].map((el) => [
+        `com.gobilda.${$(el.children[0]).prop('textContent')}`,
+        $(el.children[1]).prop('textContent')
+      ])
+    )
+
+    return {
+      name,
+      sku,
+      description,
+      image,
+      keywords,
+      specifications: { weight: Number(weight), ...additionalSpecs }
+    }
   }
 }
