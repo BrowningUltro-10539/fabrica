@@ -39,6 +39,14 @@ const cachePath = path.join(
   'files'
 )
 
+const cacheBlobPath = path.join(
+  path.dirname(url.fileURLToPath(import.meta.url)),
+  '..',
+  '..',
+  'cache',
+  'blobs'
+)
+
 await Promise.all([
   fs.mkdir(dbPath, { recursive: true }),
   fs.mkdir(cachePath, { recursive: true })
@@ -91,12 +99,25 @@ export async function useFile(
  */
 class CacheMissError extends Error {}
 
-export type CacheEntry<Value extends JsonValue> = {
+export type Cacheable = JsonValue | ArrayBuffer
+
+export type CacheEntry<Value extends Cacheable> = Value extends JsonValue
+  ? JsonValueEntry<Value>
+  : ArrayBufferEntry
+
+export type JsonValueEntry<Value extends JsonValue> = {
   expiration?: string
   value: Value
+  blob: null
 }
 
-const memoryCache: Record<string, JsonValue> = Object.create(null)
+export type ArrayBufferEntry = {
+  expiration?: string
+  value: null
+  blob: string
+}
+
+const memoryCache: Record<string, Cacheable> = Object.create(null)
 const SIZE_THRESHOLD = 50_000
 
 /**
@@ -105,7 +126,7 @@ const SIZE_THRESHOLD = 50_000
  * @param callback Function to compute the value
  * @param options Caching options
  */
-export async function useCache<Value extends JsonValue>(
+export async function useCache<Value extends Cacheable>(
   key: string,
   callback: (() => Promise<Value>) | (() => Value),
   options?: {
@@ -139,30 +160,75 @@ export async function useCache<Value extends JsonValue>(
         throw new CacheMissError(`useCache cache entry for ${key} not found`)
       throw e
     }
-    const { expiration, value } = JSON.parse(file) as CacheEntry<Value>
+    const entry: CacheEntry<Value> = JSON.parse(file) as CacheEntry<Value>
     if (
-      expiration &&
+      entry.expiration &&
       Temporal.Instant.compare(
         Temporal.Now.instant(),
-        Temporal.Instant.from(expiration)
+        Temporal.Instant.from(entry.expiration)
       ) === 1 // current instant is later than expiration instant
-    )
+    ) {
+      if (entry.blob)
+        try {
+          await fs.rm(path.join(cacheBlobPath, entry.blob))
+        } catch {}
       throw new CacheMissError(`useCache cache entry for ${key} expired`)
-    if (JSON.stringify(value).length < SIZE_THRESHOLD)
-      memoryCache[keyHash] = value
-    return value
+    }
+    let finalValue: Value
+    if (entry.blob) {
+      try {
+        finalValue = (await fs.readFile(path.join(cacheBlobPath, entry.blob)))
+          .buffer as Value
+      } catch (e) {
+        if ((e as NodeJS.ErrnoException).code === 'ENOENT')
+          throw new CacheMissError(`useCache blob entry for ${key} not found`)
+        throw e
+      }
+      if ((finalValue as ArrayBuffer).byteLength < SIZE_THRESHOLD)
+        memoryCache[keyHash] = (finalValue as ArrayBuffer).slice(0)
+    } else {
+      finalValue = entry.value as Value
+      if (JSON.stringify(finalValue).length < SIZE_THRESHOLD)
+        memoryCache[keyHash] = finalValue
+    }
+    return finalValue
   } catch (e) {
     if (!(e instanceof CacheMissError)) throw e
     const value = await callback()
     const expiration = options?.lifetime
       ? Temporal.Now.instant().add(options.lifetime).toJSON()
       : undefined
-    if (JSON.stringify(value).length < SIZE_THRESHOLD)
-      memoryCache[keyHash] = value
-    await fs.writeFile(
-      path.join(cachePath, keyHash),
-      JSON.stringify({ expiration, value } satisfies CacheEntry<Value>)
-    )
+
+    if (!(value instanceof ArrayBuffer)) {
+      if (JSON.stringify(value).length < SIZE_THRESHOLD)
+        memoryCache[keyHash] = value
+      await fs.writeFile(
+        path.join(cachePath, keyHash),
+        JSON.stringify({
+          expiration,
+          value,
+          blob: null
+        } satisfies JsonValueEntry<JsonValue>)
+      )
+    } else {
+      if ((value as ArrayBuffer).byteLength < SIZE_THRESHOLD)
+        memoryCache[keyHash] = value.slice(0)
+      const valueHash = crypto
+        .createHash('sha256')
+        .update(Buffer.from(value))
+        .digest('base64url')
+      await Promise.all([
+        fs.writeFile(
+          path.join(cachePath, keyHash),
+          JSON.stringify({
+            expiration,
+            value: null,
+            blob: valueHash
+          } satisfies ArrayBufferEntry)
+        ),
+        fs.writeFile(path.join(cacheBlobPath, valueHash), Buffer.from(value))
+      ])
+    }
     return value
   }
 }
