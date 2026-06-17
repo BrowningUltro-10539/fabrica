@@ -16,7 +16,7 @@ import {
 } from '../helpers.ts'
 import type { ExternalFile, Keyword, Product } from '../types.ts'
 import workerPool from '../worker-pool.ts'
-import type { GetCategoryPages } from '../worker/gobilda.ts'
+import type { GetCategoryPages, GetProductPages } from '../worker/gobilda.ts'
 
 const GOBILDA_SITE = 'https://www.gobilda.com'
 const MIN_WAIT_MS = 100
@@ -91,7 +91,7 @@ const parsedCategoryPages: string[] = []
  */
 async function parseCategoryPage(page: string): Promise<string[]> {
   console.log(`Doing category page ${page}`)
-  const { document, finalSite } = await getDocument(
+  const { finalSiteBuffer, finalSite } = await getFinalSite(
     page,
     GOBILDA_SITE,
     rateLimitedFetch
@@ -108,20 +108,14 @@ async function parseCategoryPage(page: string): Promise<string[]> {
 
   return useCache(
     `product pages from goBILDA page ${finalSite}`,
-    () => {
-      const links = [...document.querySelectorAll('li.product')]
-        // rudimentary filter for cards that redirect to another category page
-        .filter(
-          (li) =>
-            !li
-              .querySelector('a')
-              ?.textContent.toLowerCase()
-              .startsWith('see also')
-        )
-        .map((li) => li.querySelector('a')!.href)
-
-      return links
-    },
+    () =>
+      workerPool.sendTask<GetProductPages>(
+        {
+          operation: 'org.gobilda.getProductPages',
+          input: { siteBuffer: finalSiteBuffer }
+        },
+        [finalSiteBuffer]
+      ),
     { lifetime: Temporal.Duration.from({ hours: 24 }) }
   )
 }

@@ -10,6 +10,14 @@ export type GetCategoryPages = {
   return: Array<{ pageUrl: string; keywords: Keyword[] }>
 }
 
+export type GetProductPages = {
+  operation: 'org.gobilda.getProductPages'
+  input: {
+    siteBuffer: ArrayBuffer
+  }
+  return: string[]
+}
+
 const getPages = (
   root: ReturnType<cheerio.CheerioAPI>,
   $: cheerio.CheerioAPI
@@ -109,5 +117,20 @@ export const handleMessage = {
     const listRoot = $('div.body > div.container > ul :first')
 
     return getPages(listRoot, $)
+  },
+  'org.gobilda.getProductPages': (input: GetProductPages['input']) => {
+    const $ = cheerio.load(Buffer.from(input.siteBuffer))
+    const links = $('li.product')
+      .filter(
+        (_, li) =>
+          !$(li)
+            .find('a')
+            .prop('textContent')
+            ?.toLowerCase()
+            .startsWith('see also')
+      )
+      .map((_, li) => $(li).find('a').attr('href'))
+      .toArray()
+    return links
   }
 }
