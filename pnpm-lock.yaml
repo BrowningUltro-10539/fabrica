@@ -14,6 +14,9 @@ importers:
       '@types/node':
         specifier: ^25.9.1
         version: 25.9.1
+      husky:
+        specifier: ^9.1.7
+        version: 9.1.7
       node:
         specifier: runtime:^26.3.0
         version: runtime:26.3.0
@@ -62,6 +65,9 @@ importers:
       flexsearch:
         specifier: ^0.8.212
         version: 0.8.212
+      partdb:
+        specifier: workspace:../partdb
+        version: link:../partdb
       solid-js:
         specifier: ^1.9.13
         version: 1.9.13
@@ -1734,6 +1740,11 @@ packages:
 
   http-cache-semantics@4.2.0:
     resolution: {integrity: sha512-dTxcvPXqPvXBQpq5dUr6mEMJX4oIEFv6bwom3FDwKRDsuIjjJGANqhBuoAn9c1RQJIdAKav33ED65E2ys+87QQ==}
+
+  husky@9.1.7:
+    resolution: {integrity: sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
@@ -4267,6 +4278,8 @@ snapshots:
       entities: 7.0.1
 
   http-cache-semantics@4.2.0: {}
+
+  husky@9.1.7: {}
 
   iconv-lite@0.6.3:
     dependencies:
