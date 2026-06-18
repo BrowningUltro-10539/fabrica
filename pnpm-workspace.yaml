@@ -1,6 +1,6 @@
 packages:
-  - partdb
-  - site
+  - 'partdb'
+  - 'site'
 allowBuilds:
   esbuild: true
   sharp: true
