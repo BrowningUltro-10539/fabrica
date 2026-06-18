@@ -36,7 +36,7 @@ type HandlerMap = {
 
 const taskMap: HandlerMap = {
   checkIfFinalSite: (input) => {
-    const $ = cheerio.loadBuffer(Buffer.from(input.siteBuffer))
+    const $ = cheerio.load(new TextDecoder().decode(input.siteBuffer))
     const newSiteURL = $('meta[http-equiv="refresh"]')
       .attr('content')
       ?.split(';url=')
