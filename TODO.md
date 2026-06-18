@@ -9,10 +9,10 @@
 
 ### partdb
 
-- [ ] split out gobilda logic (eg rate limiting) so that other scrapers can use diff. rate liimts
+- [x] split out gobilda logic (eg rate limiting) so that other scrapers can use diff. rate liimts
 - [ ] override layer for products
-- [ ] type exports from partdb package
-  - [ ] better inlining logic/build step for partdb in general? perhaps build not only json but also
+- [x] type exports from partdb package
+  - [x] better inlining logic/build step for partdb in general? perhaps build not only json but also
 - [ ] moar scrapers (rev, wcp)
 - [ ] inquire about scraping w/ gobilda team
 
