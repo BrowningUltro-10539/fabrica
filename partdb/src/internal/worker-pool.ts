@@ -45,6 +45,7 @@ export class WorkerPool {
             )}: ${(e as Error).message}`
           )
         }
+        console.log(`Worker is now running: ${task.operation}`)
         idleEnt.status = 'running'
         idleEnt.workerObj.once('message', (result) => {
           idleEnt.status = 'idle'
