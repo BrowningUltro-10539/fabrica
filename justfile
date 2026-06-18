@@ -11,3 +11,9 @@ format:
 
 lint:
     ./node_modules/.bin/oxlint
+
+install *ARGS:
+    pnpm install {{ ARGS }}
+
+setup: install
+    ./node_modules/.bin/husky
