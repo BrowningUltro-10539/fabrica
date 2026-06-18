@@ -1,12 +1,14 @@
 {
   "name": "site",
   "version": "0.0.1",
+  "private": true,
   "type": "module",
   "dependencies": {
     "@astrojs/solid-js": "^6.0.1",
     "@tailwindcss/vite": "^4.3.0",
     "astro": "^6.4.4",
     "flexsearch": "^0.8.212",
+    "partdb": "workspace:*",
     "solid-js": "^1.9.13",
     "tailwindcss": "^4.3.0"
   },

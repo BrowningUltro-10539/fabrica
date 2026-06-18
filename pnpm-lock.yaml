@@ -66,7 +66,7 @@ importers:
         specifier: ^0.8.212
         version: 0.8.212
       partdb:
-        specifier: workspace:../partdb
+        specifier: workspace:*
         version: link:../partdb
       solid-js:
         specifier: ^1.9.13
