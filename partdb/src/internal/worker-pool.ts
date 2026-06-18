@@ -20,6 +20,11 @@ export class WorkerPool {
     }))
   }
 
+  [Symbol.asyncDispose] = () =>
+    Promise.all(this.#workers.map((entry) => entry.workerObj.terminate())).then(
+      () => {}
+    )
+
   sendTask = <T extends Method>(
     task: Task<T>,
     transferList?: readonly Transferable[]
