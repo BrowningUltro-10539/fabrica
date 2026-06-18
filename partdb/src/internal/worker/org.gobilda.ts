@@ -73,6 +73,7 @@ const getPages = (
       // the second element is another <ul> list.
       // However, matches for keywords need to propagate to the children.
       const a = $(li).find('a:first')
+      console.log(`processing category ${a.prop('textContent')}`)
       const ul = $(li).find('ul:first')
       result.push(
         ...getPages(ul, $).map((item) => {
@@ -124,6 +125,7 @@ export const handleMessage = {
   'org.gobilda.getCategoryPages': (input: GetCategoryPages['input']) => {
     const $ = cheerio.load(new TextDecoder().decode(input.siteBuffer))
     const listRoot = $('div.body > div.container > ul :first')
+    console.log(`List root length: ${listRoot.length}`)
 
     return getPages(listRoot, $)
   },
