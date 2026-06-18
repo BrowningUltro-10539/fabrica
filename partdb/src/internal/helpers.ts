@@ -124,9 +124,16 @@ const memoryCache: Record<string, Cacheable> = Object.create(null)
 const SIZE_THRESHOLD = 50_000
 
 const fileWriters: Record<string, Promise<void>> = Object.create(null)
-const writeFile = (filePath: string, data: string | Buffer): Promise<void> => {
-  if (filePath in fileWriters)
-    return fileWriters[filePath].then(() => fs.writeFile(filePath, data))
+const writeFile = (
+  filePath: string,
+  data: string | NodeJS.ArrayBufferView
+): Promise<void> => {
+  if (filePath in fileWriters) {
+    fileWriters[filePath] = fileWriters[filePath].then(() =>
+      fs.writeFile(filePath, data)
+    )
+    return fileWriters[filePath]
+  }
   fileWriters[filePath] = fs.writeFile(filePath, data)
   return fileWriters[filePath]
 }
@@ -226,7 +233,7 @@ export async function useCache<Value extends Cacheable>(
         memoryCache[keyHash] = value.slice(0)
       const valueHash = crypto
         .createHash('sha256')
-        .update(Buffer.from(value))
+        .update(new DataView(value))
         .digest('base64url')
       await Promise.all([
         writeFile(
@@ -237,7 +244,7 @@ export async function useCache<Value extends Cacheable>(
             blob: valueHash
           } satisfies ArrayBufferEntry)
         ),
-        writeFile(path.join(cacheBlobPath, valueHash), Buffer.from(value))
+        writeFile(path.join(cacheBlobPath, valueHash), new DataView(value))
       ])
     }
     return value
@@ -310,8 +317,8 @@ export async function getFinalSite(
     {
       operation: 'checkIfFinalSite',
       input: { url: siteURL, siteBuffer }
-    },
-    [siteBuffer]
+    }
+    // [siteBuffer]
   )
   if (newSiteURL !== siteURL) return getFinalSite(newSiteURL, baseSite, fetcher)
   // note to future self: this *could* be optimized in the future by

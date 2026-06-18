@@ -49,8 +49,8 @@ async function main(): Promise<Product[]> {
           input: {
             siteBuffer: finalSiteBuffer
           }
-        },
-        [finalSiteBuffer]
+        }
+        // [finalSiteBuffer]
       )
     },
     { lifetime: Temporal.Duration.from({ hours: 7 * 24 }) }
@@ -116,8 +116,8 @@ async function parseCategoryPage(page: string): Promise<string[]> {
         {
           operation: 'org.gobilda.getProductPages',
           input: { siteBuffer: finalSiteBuffer }
-        },
-        [finalSiteBuffer]
+        }
+        // [finalSiteBuffer]
       ),
     { lifetime: Temporal.Duration.from({ hours: 24 }) }
   )
@@ -162,8 +162,8 @@ async function parseProductPage(
               siteBuffer: finalSiteBuffer,
               keywords
             }
-          },
-          [finalSiteBuffer]
+          }
+          // [finalSiteBuffer]
         )
       } catch (e) {
         if (e instanceof TypeError)

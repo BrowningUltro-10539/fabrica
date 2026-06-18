@@ -122,13 +122,13 @@ const getPages = (
 
 export const handleMessage = {
   'org.gobilda.getCategoryPages': (input: GetCategoryPages['input']) => {
-    const $ = cheerio.load(Buffer.from(input.siteBuffer))
+    const $ = cheerio.load(new TextDecoder().decode(input.siteBuffer))
     const listRoot = $('div.body > div.container > ul :first')
 
     return getPages(listRoot, $)
   },
   'org.gobilda.getProductPages': (input: GetProductPages['input']) => {
-    const $ = cheerio.load(Buffer.from(input.siteBuffer))
+    const $ = cheerio.load(new TextDecoder().decode(input.siteBuffer))
     const links = $('li.product')
       .filter(
         (_, li) =>
@@ -146,7 +146,7 @@ export const handleMessage = {
     siteBuffer,
     keywords
   }: GetProductData['input']) => {
-    const $ = cheerio.load(Buffer.from(siteBuffer))
+    const $ = cheerio.load(new TextDecoder().decode(siteBuffer))
     const $strict: typeof $ = ((...query) => {
       const el = $(...query)
       if (el.length === 0)
