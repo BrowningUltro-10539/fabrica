@@ -31,7 +31,7 @@ export type MethodFromOperation<T extends Method['operation']> = Extract<
 type HandlerMap = {
   [O in Method['operation']]: (
     input: MethodFromOperation<O>['input']
-  ) => MethodFromOperation<O>['return']
+  ) => MethodFromOperation<O>['return'] | Error
 }
 
 const taskMap: HandlerMap = {
