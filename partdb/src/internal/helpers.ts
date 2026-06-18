@@ -327,3 +327,5 @@ export async function getFinalSite(
 
   return { finalSiteBuffer: siteBuffer, finalSite: siteURL }
 }
+
+if (import.meta.main) await workerPool[Symbol.asyncDispose]()

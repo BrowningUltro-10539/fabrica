@@ -185,3 +185,5 @@ const { name } = await useFile(
 )
 console.log(`Final list written to ./dist/files/${name}`)
 export default defineAdapter(products)
+
+if (import.meta.main) await workerPool[Symbol.asyncDispose]()

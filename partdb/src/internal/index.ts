@@ -3,6 +3,7 @@ import path from 'node:path'
 import url from 'node:url'
 
 import type { Product } from './types.ts'
+import workerPool from './worker-pool.ts'
 
 // no `await using` needed here since
 // going through the iterator automatically disposes of the resource.
@@ -21,3 +22,5 @@ for await (const entry of dir) {
 }
 
 export default (await Promise.all(adapters)).flat()
+
+await workerPool[Symbol.asyncDispose]()
