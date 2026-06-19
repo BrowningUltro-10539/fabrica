@@ -4,9 +4,6 @@ dist/
 # partdb build cache
 cache/
 
-# generated types
-.astro/
-
 # dependencies
 node_modules/
 
@@ -25,6 +22,3 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
-
-# Local Netlify folder
-.netlify
