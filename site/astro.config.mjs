@@ -1,6 +1,7 @@
 import cloudflare from '@astrojs/cloudflare'
 import solidJs from '@astrojs/solid-js'
 import tailwindcss from '@tailwindcss/vite'
+import { fontProviders } from 'astro/config'
 // @ts-check
 import { defineConfig } from 'astro/config'
 
@@ -28,5 +29,29 @@ export default defineConfig({
 
   image: {
     remotePatterns: [{ protocol: 'https' }]
-  }
+  },
+
+  fonts: [
+    {
+      name: 'DM Sans',
+      provider: fontProviders.google(),
+      cssVariable: '--font-dm-sans',
+      styles: ['normal'],
+      weights: [400, 700]
+    },
+    {
+      name: 'IBM Plex Sans',
+      provider: fontProviders.google(),
+      cssVariable: '--font-ibm-plex-sans',
+      styles: ['normal', 'italic'],
+      weights: [400, 700]
+    },
+    {
+      name: 'IBM Plex Mono',
+      provider: fontProviders.google(),
+      cssVariable: '--font-ibm-plex-mono',
+      styles: ['normal'],
+      weights: [400]
+    }
+  ]
 })
