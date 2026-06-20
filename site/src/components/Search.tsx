@@ -1,4 +1,5 @@
 import { actions } from 'astro:actions'
+import { prefetch } from 'astro:prefetch'
 import {
   For,
   createResource,
@@ -38,7 +39,14 @@ export default function Search() {
           <For each={queryResult()}>
             {(doc) => (
               <li>
-                <h3>{doc.name}</h3>
+                <h3>
+                  <a
+                    href={`/products/${doc.sku}`}
+                    onMouseOver={() => prefetch(`/products/${doc.sku}`)}
+                  >
+                    {doc.name}
+                  </a>
+                </h3>
                 <p>{doc.description}</p>
                 {doc.image?.type === 'external' ? (
                   <img src={doc.image.url} alt="thing" height={100} />
