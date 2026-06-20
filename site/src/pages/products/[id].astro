@@ -1,0 +1,35 @@
+---
+import { products } from 'partdb'
+import type { GetStaticPaths } from 'astro'
+import Layout from '../../layouts/Layout.astro'
+export const getStaticPaths = (() =>
+  products.map(({ sku, ...data }) => ({
+    params: { id: sku },
+    props: data
+  }))) satisfies GetStaticPaths
+const { name, description, image, specifications } = Astro.props
+---
+
+<Layout>
+  <h1>{name}</h1>
+  {
+    image?.type === 'external' ? (
+      <img src={image.url} alt={`Product image for ${name}`} />
+    ) : null
+  }
+  <p>{description}</p>
+  <table>
+    <tr>
+      <th>Specification</th>
+      <th>Value</th>
+    </tr>
+    {
+      Object.entries(specifications).map(([key, value]) => (
+        <tr>
+          <td>{key}</td>
+          <td>{value}</td>
+        </tr>
+      ))
+    }
+  </table>
+</Layout>
