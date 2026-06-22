@@ -1,4 +1,15 @@
 {
   "chat.disableAIFeatures": true,
-  "editor.wordWrap": "on"
+  "editor.wordWrap": "on",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "[astro]": {
+    "editor.defaultFormatter": "astro-build.astro-vscode"
+  },
+  "[just]": {
+    "editor.defaultFormatter": "nefrob.vscode-just-syntax"
+  },
+  "oxc.enable": true,
+  "files.associations": {
+    "*.css": "tailwindcss"
+  }
 }
