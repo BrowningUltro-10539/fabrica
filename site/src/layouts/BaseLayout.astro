@@ -1,0 +1,48 @@
+---
+import '../styles/global.css'
+import { SEO } from 'astro-seo'
+import { Head } from 'astro-capo'
+import Banner from '../assets/banner.png'
+import { Font } from 'astro:assets'
+
+interface Props {
+  title: string
+  description: string
+  seoTitle?: string
+}
+
+const { title, description, seoTitle } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <Head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="fabrica" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="generator" content={Astro.generator} />
+    <SEO
+      title={title}
+      description={description}
+      charset="utf8"
+      openGraph={{
+        basic: {
+          title: seoTitle ?? title,
+          type: 'website',
+          image: Banner.src
+        }
+      }}
+    />
+    <Font cssVariable="--font-dm-sans" />
+    <Font cssVariable="--font-ibm-plex-sans" />
+    {/* Not all pages use --font-ibm-plex-mono */}
+    <slot name="head" />
+  </Head>
+  <body class="bg-fb-background-light dark:bg-fb-background-dark">
+    <slot />
+  </body>
+</html>

@@ -1,11 +1,53 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import Search from '../components/Search'
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import fabricaLogo from '../assets/fabrica.svg'
+import fabricaLogoDarkMode from '../assets/fabrica_darkbkg.svg'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import SearchBar from '../components/SearchBar'
 ---
 
-<Layout title="fabrica — The Parts Library for Everything Robotics.">
-  <Search client:only />
-</Layout>
+<BaseLayout
+  title="fabrica — The Parts Library for Everything Robotics."
+  description="fabrica is an online robotics parts library."
+>
+  <header class="fixed w-full">
+    <noscript
+      class="w-full bg-fb-secondary-dark dark:bg-fb-secondary-light flex items-center justify-center"
+    >
+      <p
+        class="text-fb-text-primary-light dark:text-fb-text-primary-dark px-2 text-center"
+      >
+        JavaScript was detected as disabled. Please enable JavaScript for
+        increased functionality like search-as-you-type.
+      </p>
+    </noscript>
+    {/* nav stuff */}
+  </header>
+  <main>
+    <section
+      aria-label="Parts search"
+      class="flex items-center justify-center h-svh"
+    >
+      <div class="flex flex-col max-w-200 w-3/4 items-center">
+        <picture class="px-6">
+          <source
+            srcset={fabricaLogoDarkMode.src}
+            media="(prefers-color-scheme: dark)"
+          />
+          <img
+            src={fabricaLogo.src}
+            alt="fabrica logo"
+            loading="eager"
+            width={fabricaLogo.width}
+            height={fabricaLogo.height}
+            class="py-5"
+          />
+        </picture>
+        <SearchBar
+          interactivity={null}
+          placeholder="Search for parts..."
+          client:load
+        />
+      </div>
+    </section>
+  </main>
+</BaseLayout>

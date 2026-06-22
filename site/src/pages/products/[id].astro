@@ -1,7 +1,7 @@
 ---
 import { products } from 'partdb'
 import type { GetStaticPaths } from 'astro'
-import Layout from '../../layouts/Layout.astro'
+import BaseLayout from '../../layouts/BaseLayout.astro'
 export const getStaticPaths = (() =>
   products.map(({ sku, ...data }) => ({
     params: { id: sku },
@@ -10,7 +10,7 @@ export const getStaticPaths = (() =>
 const { name, description, image, specifications } = Astro.props
 ---
 
-<Layout>
+<BaseLayout title={name + ' - fabrica'} description={description}>
   <h1>{name}</h1>
   {
     image?.type === 'external' ? (
@@ -32,4 +32,4 @@ const { name, description, image, specifications } = Astro.props
       ))
     }
   </table>
-</Layout>
+</BaseLayout>
