@@ -52,7 +52,3 @@
 @view-transition {
   navigation: auto;
 }
-
-:root {
-  scrollbar-gutter: stable;
-}
