@@ -8,8 +8,8 @@
   /* color literals */
   --color-fb-black: #030413;
   --color-fb-off-black: #10142e;
-  --color-fb-white: #fcfcfc;
-  --color-fb-off-white: #e3e3e3;
+  --color-fb-white: #fafafe;
+  --color-fb-off-white: #d3d3e3;
   --color-fb-light-gray: #a8a8a8;
   --color-fb-medium-gray: #5c5c5c;
   --color-fb-blue: #10539f;
@@ -28,7 +28,7 @@
   /* dark mode color palette */
   --color-fb-background-dark: var(--color-fb-black);
   --color-fb-surface-dark: var(--color-fb-off-black);
-  --color-fb-text-primary-dark: var(--color-fb-off-white);
+  --color-fb-text-primary-dark: var(--color-fb-white);
   --color-fb-text-secondary-dark: var(--color-fb-light-gray);
   --color-fb-primary-dark: var(--color-fb-light-blue);
   --color-fb-secondary-dark: var(--color-fb-light-red);
