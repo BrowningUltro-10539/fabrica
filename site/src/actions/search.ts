@@ -8,15 +8,6 @@ import type { Product } from 'partdb'
 const document = new Document<Product>({
   tokenize: 'forward',
   encoder: Charset.LatinAdvanced,
-  store: [
-    {
-      field: 'name'
-    },
-    {
-      field: 'description',
-      encoder: English
-    }
-  ],
   document: {
     id: 'sku',
     index: [
@@ -35,22 +26,41 @@ const document = new Document<Product>({
       {
         field: 'specifications'
       }
-    ]
+    ],
+    store: ['name', 'description']
   }
 })
-for (const product of products) {
-  document.add(product)
-}
+
+// const { setTimeout, clearTimeout } = globalThis
+
+// forgive me cloudflare for i have sinned 🥺
+
+// globalThis.setTimeout = ((cb: Function) => {
+//   void cb()
+//   return 0
+// }) as unknown as typeof setTimeout
+
+// globalThis.clearTimeout = (() => undefined) as unknown as typeof clearTimeout
+
+let committed = false
+
+// globalThis.setTimeout = setTimeout
+// globalThis.clearTimeout = clearTimeout
 
 export const search = defineAction({
   input: z.string(),
   handler: (input) => {
-    const time = Date.now()
+    if (!committed) {
+      for (const product of products) {
+        document.add(product)
+      }
+      committed = true
+    }
     const result = [
       ...new Set(document.search(input).flatMap((entry) => entry.result))
-    ].map((sku) => products.find((product) => product.sku === sku))
-    // .flatMap(({ result }) => products.find((product) => product.sku === id))
-    console.log(Date.now() - time)
+    ]
+      .map((sku) => products.find((product) => product.sku === sku))
+      .filter((product) => !!product)
     return result
   }
 })

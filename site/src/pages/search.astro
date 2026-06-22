@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import SearchPage from '../components/SearchPage'
+import { actions } from 'astro:actions'
+import type { Product } from 'partdb'
+
+export const prerender = false
+
+const query = Astro.url.searchParams.get('q')
+
+let products: Product[] | undefined
+
+if (query) {
+  const { data, error } = await Astro.callAction(actions.search, query)
+  if (!error) products = data
+}
+---
+
+<BaseLayout
+  title="Search — fabrica"
+  description="Search through thousands of robotics products"
+>
+  <SearchPage
+    initialQuery={query ?? undefined}
+    initialProducts={products}
+    client:load
+  />
+</BaseLayout>

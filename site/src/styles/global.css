@@ -41,3 +41,7 @@
   --font-sans: var(--font-ibm-plex-sans);
   --font-mono: var(--font-ibm-plex-mono);
 }
+
+@view-transition {
+  navigation: auto;
+}
