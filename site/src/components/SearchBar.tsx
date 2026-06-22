@@ -45,7 +45,7 @@ export default function SearchBar(props: {
         autofocus={props.interactivity?.autofocused}
         onInput={props.onInput}
         value={props.value ?? ''}
-        class="peer bg-fb-surface-light dark:bg-fb-surface-dark text-fb-text-secondary-light dark:text-fb-text-secondary-dark border-fb-black/5 dark:border-fb-white/5 accent-fb-light-blue h-full w-full rounded-4xl border pl-14 shadow-md outline-0 transition-all focus:pl-5 [&::-webkit-search-cancel-button]:hidden"
+        class="peer h-full w-full rounded-4xl border border-fb-black/5 bg-fb-surface-light pl-14 text-fb-text-secondary-light accent-fb-light-blue shadow-md outline-0 transition-all focus:pl-5 dark:border-fb-white/5 dark:bg-fb-surface-dark dark:text-fb-text-secondary-dark [&::-webkit-search-cancel-button]:hidden"
       />
       {/* <SearchIcon /> */}
       <svg
@@ -53,7 +53,7 @@ export default function SearchBar(props: {
         width="2em"
         height="2em"
         viewBox="0 0 24 24"
-        class="text-fb-text-secondary-light dark:text-fb-text-secondary-dark absolute top-[calc(50%-1em)] left-4 transition-all peer-focus:opacity-0"
+        class="absolute top-[calc(50%-1em)] left-4 text-fb-text-secondary-light transition-all peer-focus:opacity-0 dark:text-fb-text-secondary-dark"
       >
         <path d="M0 0h24v24H0z" fill="none" />
         <g

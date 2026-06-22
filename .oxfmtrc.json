@@ -4,5 +4,7 @@
   "semi": false,
   "sortImports": true,
   "trailingComma": "none",
-  "sortTailwindcss": true
+  "sortTailwindcss": {
+    "stylesheet": "./site/src/styles/global.css"
+  }
 }
