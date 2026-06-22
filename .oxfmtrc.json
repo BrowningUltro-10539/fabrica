@@ -3,5 +3,6 @@
   "singleQuote": true,
   "semi": false,
   "sortImports": true,
-  "trailingComma": "none"
+  "trailingComma": "none",
+  "sortTailwindcss": true
 }

@@ -21,7 +21,7 @@ export default function SearchBar(props: {
   return (
     <form
       method="get"
-      class="max-w-300 w-full h-16 relative [view-transition-name:search-bar]"
+      class="relative h-16 w-full max-w-300 [view-transition-name:search-bar]"
       name="search"
       role="search"
       onSubmit={(e) => {
@@ -45,7 +45,7 @@ export default function SearchBar(props: {
         autofocus={props.interactivity?.autofocused}
         onInput={props.onInput}
         value={props.value ?? ''}
-        class="peer rounded-4xl w-full h-full bg-fb-surface-light dark:bg-fb-surface-dark text-fb-text-secondary-light dark:text-fb-text-secondary-dark border-fb-black/5 dark:border-fb-white/5 border shadow-md pl-14 focus:pl-5 transition-all accent-fb-light-blue outline-0 [&::-webkit-search-cancel-button]:hidden"
+        class="peer bg-fb-surface-light dark:bg-fb-surface-dark text-fb-text-secondary-light dark:text-fb-text-secondary-dark border-fb-black/5 dark:border-fb-white/5 accent-fb-light-blue h-full w-full rounded-4xl border pl-14 shadow-md outline-0 transition-all focus:pl-5 [&::-webkit-search-cancel-button]:hidden"
       />
       {/* <SearchIcon /> */}
       <svg
@@ -53,7 +53,7 @@ export default function SearchBar(props: {
         width="2em"
         height="2em"
         viewBox="0 0 24 24"
-        class="text-fb-text-secondary-light dark:text-fb-text-secondary-dark absolute top-[calc(50%-1em)] left-4 peer-focus:opacity-0 transition-all"
+        class="text-fb-text-secondary-light dark:text-fb-text-secondary-dark absolute top-[calc(50%-1em)] left-4 transition-all peer-focus:opacity-0"
       >
         <path d="M0 0h24v24H0z" fill="none" />
         <g
