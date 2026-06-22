@@ -45,7 +45,7 @@
   /*                                   SPACING                                  */
   /* -------------------------------------------------------------------------- */
 
-  --spacing-max-content-width: var(--spacing) * 300;
+  --spacing-max-content-width: calc(var(--spacing) * 300);
   --spacing-content-width: calc(100vw - (var(--spacing) * 10));
 }
 
