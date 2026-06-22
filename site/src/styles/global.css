@@ -18,8 +18,8 @@
   --color-fb-light-red: #e2607f;
 
   /* light mode color palette */
-  --color-fb-background-light: var(--color-fb-white);
-  --color-fb-surface-light: var(--color-fb-off-white);
+  --color-fb-background-light: var(--color-fb-off-white);
+  --color-fb-surface-light: var(--color-fb-white);
   --color-fb-text-primary-light: var(--color-fb-black);
   --color-fb-text-secondary-light: var(--color-fb-medium-gray);
   --color-fb-primary-light: var(--color-fb-blue);
