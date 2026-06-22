@@ -4,13 +4,18 @@ import tailwindcss from '@tailwindcss/vite'
 import { fontProviders } from 'astro/config'
 // @ts-check
 import { defineConfig } from 'astro/config'
+import Icons from 'unplugin-icons/vite'
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [solidJs()],
+  integrations: [
+    solidJs({
+      include: ['~icons/**', '**.tsx']
+    })
+  ],
 
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), Icons({ compiler: 'solid' })],
 
     build: {
       minify: true
