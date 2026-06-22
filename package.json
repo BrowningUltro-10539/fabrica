@@ -6,6 +6,9 @@
   "keywords": [],
   "license": "GPL-3.0-only",
   "author": "",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm"
+  },
   "devDependencies": {
     "@tsconfig/node26": "^26.0.0",
     "@types/node": "^25.9.3",
