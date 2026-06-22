@@ -40,6 +40,13 @@
   --font-display: var(--font-dm-sans);
   --font-sans: var(--font-ibm-plex-sans);
   --font-mono: var(--font-ibm-plex-mono);
+
+  /* -------------------------------------------------------------------------- */
+  /*                                   SPACING                                  */
+  /* -------------------------------------------------------------------------- */
+
+  --spacing-max-content-width: var(--spacing) * 300;
+  --spacing-content-width: calc(100vw - (var(--spacing) * 10));
 }
 
 @view-transition {
