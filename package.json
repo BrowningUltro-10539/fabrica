@@ -22,7 +22,7 @@
   "lint-staged": {
     "*": [
       "oxlint --no-error-on-unmatched-pattern",
-      "oxfmt"
+      "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
   "devEngines": {
