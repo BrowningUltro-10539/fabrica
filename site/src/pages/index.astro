@@ -1,6 +1,5 @@
 ---
-import fabricaLogo from '../assets/fabrica.svg'
-import fabricaLogoDarkMode from '../assets/fabrica_darkbkg.svg'
+import Logo from '../components/Logo'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import SearchBar from '../components/SearchBar'
 ---
@@ -27,21 +26,8 @@ import SearchBar from '../components/SearchBar'
       aria-label="Parts search"
       class="flex items-center justify-center h-svh"
     >
-      <div class="flex flex-col max-w-200 w-3/4 items-center">
-        <picture class="px-6">
-          <source
-            srcset={fabricaLogoDarkMode.src}
-            media="(prefers-color-scheme: dark)"
-          />
-          <img
-            src={fabricaLogo.src}
-            alt="fabrica logo"
-            loading="eager"
-            width={fabricaLogo.width}
-            height={fabricaLogo.height}
-            class="py-5"
-          />
-        </picture>
+      <div class="flex flex-col max-w-200 w-3/4 items-center gap-6 pb-[10%]">
+        <Logo />
         <SearchBar
           interactivity={null}
           placeholder="Search for parts..."
