@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro'
 import SearchPage from '../components/SearchPage'
 import { actions } from 'astro:actions'
 import type { Product } from 'partdb'
+import { Font } from 'astro:assets'
 
 export const prerender = false
 
@@ -20,6 +21,7 @@ if (query) {
   title="Search — fabrica"
   description="Search through thousands of robotics products"
 >
+  <Font slot="head" cssVariable="--font-ibm-plex-mono" />
   <SearchPage
     initialQuery={query ?? undefined}
     initialProducts={products}
