@@ -4,6 +4,8 @@
 import type { JSX } from 'solid-js/jsx-runtime'
 import { isServer } from 'solid-js/web'
 
+import { prefetch } from '../lib/prefetch'
+
 export default function SearchBar(props: {
   placeholder?: string
   onInput?: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent>
@@ -21,7 +23,7 @@ export default function SearchBar(props: {
   return (
     <form
       method="get"
-      class="relative h-16 w-full max-w-300 [view-transition-name:search-bar]"
+      class="relative h-16 w-full max-w-max-content-width min-w-fit rounded-full backdrop-blur-md transition-all [view-transition-name:search-bar]"
       name="search"
       role="search"
       onSubmit={(e) => {
@@ -42,10 +44,15 @@ export default function SearchBar(props: {
             ? undefined
             : () => location.assign('/search')
         }
+        onMouseOver={
+          props.interactivity || isServer
+            ? undefined
+            : () => prefetch?.('/search')
+        }
         autofocus={props.interactivity?.autofocused}
         onInput={props.onInput}
         value={props.value ?? ''}
-        class="peer h-full w-full rounded-4xl border border-fb-black/5 bg-fb-surface-light pl-14 text-fb-text-secondary-light accent-fb-light-blue shadow-md outline-0 transition-all focus:pl-5 dark:border-fb-white/5 dark:bg-fb-surface-dark dark:text-fb-text-secondary-dark [&::-webkit-search-cancel-button]:hidden"
+        class="peer h-full w-full rounded-full border border-fb-black/5 bg-fb-surface-light/70 pl-14 text-fb-text-secondary-light accent-fb-light-blue shadow-md outline-0 transition-all focus:pl-5 dark:border-fb-white/5 dark:bg-fb-surface-dark/70 dark:text-fb-text-secondary-dark [&::-webkit-search-cancel-button]:hidden"
       />
       {/* <SearchIcon /> */}
       <svg
