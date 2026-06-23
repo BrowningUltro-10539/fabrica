@@ -7,7 +7,7 @@ import {
   Suspense,
   createEffect
 } from 'solid-js'
-import { isServer, NoHydration } from 'solid-js/web'
+import { isServer } from 'solid-js/web'
 
 import Logo from './Logo'
 import NoScriptBanner from './NoScriptBanner'
