@@ -7,9 +7,10 @@ import {
   Suspense,
   createEffect
 } from 'solid-js'
-import { isServer } from 'solid-js/web'
+import { isServer, NoHydration } from 'solid-js/web'
 
 import Logo from './Logo'
+import NoScriptBanner from './NoScriptBanner'
 import ProductItem from './ProductItem'
 import SearchBar from './SearchBar'
 
@@ -51,7 +52,9 @@ export default function SearchPage(props: {
 
   return (
     <>
-      <header class="fixed z-10 flex h-22 w-full items-center justify-center bg-linear-to-b from-fb-background-light/50 via-fb-background-light/20 to-fb-background-light/0 dark:from-fb-background-dark/70 dark:via-fb-background-dark/30 dark:to-fb-background-dark/0">
+      <header class="fixed z-10 flex h-22 w-full flex-col items-center justify-start bg-linear-to-b from-fb-background-light/50 via-fb-background-light/20 to-fb-background-light/0 dark:from-fb-background-dark/70 dark:via-fb-background-dark/30 dark:to-fb-background-dark/0">
+        <NoScriptBanner />
+
         <nav class="mr-2 ml-7 flex h-full w-content-width max-w-max-content-width items-center justify-center gap-4">
           <a
             href="/"
