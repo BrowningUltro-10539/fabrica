@@ -38,7 +38,7 @@ const { title, description, seoTitle } = Astro.props
       }}
     />
     <Font cssVariable="--font-dm-sans" />
-    <Font cssVariable="--font-ibm-plex-sans" />
+    <Font cssVariable="--font-ibm-plex-sans" preload />
     {/* Not all pages use --font-ibm-plex-mono */}
     <slot name="head" />
   </Head>
