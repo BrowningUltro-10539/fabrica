@@ -44,10 +44,10 @@ export default function SearchBar(props: {
             ? undefined
             : () => location.assign('/search')
         }
-        onMouseOver={
+        onPointerEnter={
           props.interactivity || isServer
             ? undefined
-            : () => prefetch?.('/search')
+            : (e) => e.pointerType === 'mouse' && prefetch?.('/search')
         }
         autofocus={props.interactivity?.autofocused}
         onInput={props.onInput}
