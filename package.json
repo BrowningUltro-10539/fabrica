@@ -21,7 +21,7 @@
   },
   "lint-staged": {
     "*": [
-      "oxlint --no-error-on-unmatched-pattern",
+      "oxlint --no-error-on-unmatched-pattern --deny-warnings",
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
