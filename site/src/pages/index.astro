@@ -2,6 +2,7 @@
 import Logo from '../components/Logo'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import SearchBar from '../components/SearchBar'
+import NoScriptBanner from '../components/NoScriptBanner'
 ---
 
 <BaseLayout
@@ -9,16 +10,7 @@ import SearchBar from '../components/SearchBar'
   description="fabrica is an online robotics parts library."
 >
   <header class="fixed w-full">
-    <noscript
-      class="w-full bg-fb-secondary-dark dark:bg-fb-secondary-light flex items-center justify-center"
-    >
-      <p
-        class="text-fb-text-primary-light dark:text-fb-text-primary-dark px-2 text-center"
-      >
-        JavaScript was detected as disabled. Please enable JavaScript for
-        increased functionality like search-as-you-type.
-      </p>
-    </noscript>
+    <NoScriptBanner />
     {/* nav stuff */}
   </header>
   <main>
