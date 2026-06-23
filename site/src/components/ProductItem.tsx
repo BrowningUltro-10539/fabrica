@@ -38,7 +38,7 @@ export default function ProductItem(props: {
           <h3 class="mb-0 line-clamp-1 overflow-hidden font-display text-xl font-bold text-ellipsis text-fb-text-primary-light dark:text-fb-text-primary-dark">
             {props.doc.name}
           </h3>
-          <h4 class="mb-2 line-clamp-1 overflow-hidden font-mono text-xs text-fb-off-white">
+          <h4 class="mb-2 line-clamp-1 overflow-hidden font-mono text-xs text-fb-off-black dark:text-fb-off-white">
             {`Brand: ${brandEntry()?.name ?? 'Unknown'}, SKU: ${props.doc.sku.slice(Number(brandEntry()?.id.length) + 1)}`}
           </h4>
           <p class="line-clamp-3 overflow-hidden text-sm text-ellipsis text-fb-text-secondary-light dark:text-fb-text-secondary-dark">
