@@ -1,21 +1,27 @@
 import fabricaLogo from '../assets/fabrica.svg'
 import fabricaLogoDarkMode from '../assets/fabrica_darkbkg.svg'
+import fabricaLogoSquare from '../assets/fabrica_icon.svg'
 
 export default function Logo(props: { coerceToSmall: boolean }) {
   return (
-    <picture class="flex h-full w-fit items-center justify-center pl-0.5 transition-all [view-transition-name:fabrica-logo]">
+    <picture class="flex h-full w-full items-center justify-center [view-transition-name:fabrica-logo]">
+      {props.coerceToSmall && (
+        <source
+          srcset={fabricaLogoSquare.src}
+          media="(width < 40rem)"
+          class="h-full w-auto"
+        />
+      )}
       <source
         srcset={fabricaLogoDarkMode.src}
         media="(prefers-color-scheme: dark)"
+        class="h-full w-auto"
       />
       <img
         src={fabricaLogo.src}
         alt="fabrica logo"
         loading="eager"
-        width={fabricaLogo.width}
-        height={fabricaLogo.height}
-        class="aspect-auto h-full w-full object-cover object-left transition-all"
-        classList={{ 'max-sm:aspect-square': props.coerceToSmall }}
+        class="h-full w-auto"
       />
     </picture>
   )

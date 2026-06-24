@@ -55,10 +55,10 @@ export default function SearchPage(props: {
       <header class="fixed z-10 flex h-22 w-full flex-col items-center justify-start bg-linear-to-b from-fb-background-light/50 via-fb-background-light/20 to-fb-background-light/0 dark:from-fb-background-dark/70 dark:via-fb-background-dark/30 dark:to-fb-background-dark/0">
         <NoScriptBanner />
 
-        <nav class="mr-2 ml-7 flex h-full w-content-width max-w-max-content-width items-center justify-center gap-4">
+        <nav class="flex h-full w-content-width max-w-max-content-width items-center justify-center gap-4">
           <a
             href="/"
-            class="flex h-16 min-w-fit items-center justify-center rounded-xl border border-fb-black/5 bg-fb-surface-light/90 p-3 shadow-md backdrop-blur-md transition-all dark:border-fb-white/5 dark:bg-fb-surface-dark/90"
+            class="flex h-16 w-18 items-center justify-center rounded-xl border border-fb-black/5 bg-fb-surface-light/90 p-3 shadow-md backdrop-blur-md transition-all sm:w-62 dark:border-fb-white/5 dark:bg-fb-surface-dark/90"
           >
             <Logo coerceToSmall={true} />
           </a>
@@ -69,7 +69,6 @@ export default function SearchPage(props: {
             onSubmit={() => refetch()}
             value={props.initialQuery}
           />
-          <div></div>
         </nav>
       </header>
       <main class="flex flex-col items-center pt-22">

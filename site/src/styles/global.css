@@ -47,6 +47,9 @@
 
   --spacing-max-content-width: calc(var(--spacing) * 300);
   --spacing-content-width: calc(100vw - (var(--spacing) * 10));
+
+  --breakpoint-xs: 32rem;
+  --breakpoint-2xs: 20rem;
 }
 
 @view-transition {
