@@ -49,12 +49,12 @@ export default function ProductItem(props: {
           <div class="flex w-full items-end justify-between">
             <a
               href={`/products/${props.doc.sku}`}
-              class="rounded-full border border-fb-black/5 bg-fb-primary-light px-4 py-4 text-fb-white shadow-current transition-colors hover:bg-fb-primary-dark hover:shadow-xl dark:border-fb-white/5 dark:bg-fb-primary-dark dark:text-fb-black hover:dark:bg-fb-primary-light"
+              class="rounded-full border border-fb-black/5 bg-fb-primary-light px-4 py-4 text-fb-white transition-colors hover:bg-fb-primary-dark hover:shadow-md dark:border-fb-white/5 dark:bg-fb-primary-dark dark:text-fb-black hover:dark:bg-fb-primary-light"
             >
               Learn more
             </a>
             <div class="hidden items-center justify-center gap-2 2xs:flex">
-              <button class="flex h-14 w-14 items-center justify-center rounded-lg border border-fb-black/5 bg-fb-yellow text-fb-white transition-colors hover:bg-fb-light-yellow dark:border-fb-white/5 dark:bg-fb-light-yellow dark:text-fb-black hover:dark:bg-fb-yellow">
+              <button class="flex h-14 w-14 items-center justify-center rounded-lg border border-fb-black/5 bg-fb-yellow text-fb-white transition-colors hover:bg-fb-light-yellow hover:shadow-md dark:border-fb-white/5 dark:bg-fb-light-yellow dark:text-fb-black hover:dark:bg-fb-yellow">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="2em"
@@ -72,7 +72,7 @@ export default function ProductItem(props: {
                   />
                 </svg>
               </button>
-              <button class="flex h-14 w-14 items-center justify-center rounded-lg border border-fb-black/5 bg-fb-red text-fb-white transition-colors hover:bg-fb-light-red dark:border-fb-white/5 dark:bg-fb-light-red dark:text-fb-black hover:dark:bg-fb-red">
+              <button class="flex h-14 w-14 items-center justify-center rounded-lg border border-fb-black/5 bg-fb-red text-fb-white transition-colors hover:bg-fb-light-red hover:shadow-md dark:border-fb-white/5 dark:bg-fb-light-red dark:text-fb-black hover:dark:bg-fb-red">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="2em"
