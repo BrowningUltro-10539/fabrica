@@ -16,6 +16,8 @@
   --color-fb-light-blue: #4890d9;
   --color-fb-red: #a3143d;
   --color-fb-light-red: #e2607f;
+  --color-fb-yellow: #9b9601;
+  --color-fb-light-yellow: #c7c34b;
 
   /* light mode color palette */
   --color-fb-background-light: var(--color-fb-off-white);
