@@ -22,7 +22,7 @@ import type {
 } from '../worker/org.gobilda.ts'
 
 const GOBILDA_SITE = 'https://www.gobilda.com'
-const MIN_WAIT_MS = 100
+const MIN_WAIT_MS = 1000
 
 const rateLimitedFetch: typeof fetch = createThrottled(fetch, MIN_WAIT_MS)
 
