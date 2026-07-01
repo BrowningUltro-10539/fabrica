@@ -203,8 +203,8 @@ export const handleMessage = {
 
       const additionalSpecs = Object.fromEntries(
         [...$('tr.product-specsTable-row')].map((el) => [
-          `com.gobilda.${$(el.children[0]).prop('textContent')}`,
-          $(el.children[1]).prop('textContent')
+          `com.gobilda.${$(el).find('.product-specsTable-headerCell').prop('textContent')}`,
+          $(el).find('product-specsTable-cell').prop('textContent')
         ])
       )
 
