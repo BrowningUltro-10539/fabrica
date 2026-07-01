@@ -258,7 +258,7 @@ export async function useCache<Value extends Cacheable>(
 /**
  * Create a function that throttles an async operation.
  * @param callback The async function to throttle
- * @param timeMs The minimum time between function invocations
+ * @param timeMs The minimum time in milliseconds between function invocations
  */
 export function createThrottled<Args extends any[], Return>(
   callback: (...args: Args) => Promise<Return>,
@@ -270,6 +270,28 @@ export function createThrottled<Args extends any[], Return>(
     const promiseStart = promise
     promise = promise.then(() => setTimeout(timeMs))
     return promiseStart.then(() => callback(...args))
+  }
+}
+
+/**
+ * Create a function that spaces out async operations.
+ * Compared to `createThrottled`, which spaces the
+ * invocations of the function, the delay is instead between
+ * the fulfillment of the previous promise and
+ * the invocation of the next.
+ * @param callback The async function to throttle
+ * @param timeMs The minimum time in milliseconds between function invocations
+ */
+export function createSpaced<Args extends any[], Return>(
+  callback: (...args: Args) => Promise<Return>,
+  timeMs: number
+): (...args: Args) => Promise<Return> {
+  let promise: Promise<void> = Promise.resolve()
+
+  return (...args) => {
+    const promiseStart = promise.then(() => callback(...args))
+    promise = promiseStart.then(() => setTimeout(timeMs))
+    return promiseStart
   }
 }
 
