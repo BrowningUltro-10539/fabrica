@@ -1,5 +1,7 @@
 import * as cheerio from 'cheerio'
+import he from 'he'
 
+import { sanitizeSKUSegment } from '../helpers.ts'
 import type { ExternalFile, Keyword, Product } from '../types.ts'
 
 export type GetCategoryPages = {
@@ -164,11 +166,11 @@ export const handleMessage = {
     }
 
     try {
-      const name = $strict('meta[itemprop="name"]').prop('content')
+      const name = he.decode($strict('meta[itemprop="name"]').prop('content'))
       const sku =
-        `com.gobilda.${$strict('meta[itemprop="sku"]').prop('content')}` as `com.gobilda.${string}`
-      const description = $strict('meta[itemprop="description"]').prop(
-        'content'
+        `com.gobilda.${sanitizeSKUSegment($strict('meta[itemprop="sku"]').prop('content'))}` as `com.gobilda.${string}`
+      const description = he.decode(
+        $strict('meta[itemprop="description"]').prop('content')
       )
       // TODO add logic for adding more keywords
       const image = {
