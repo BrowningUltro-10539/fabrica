@@ -12,12 +12,15 @@ export class WorkerPool {
   #queue: Array<() => void> = []
 
   constructor(numWorkers: number) {
+    console.log('Creating worker pool...')
+    console.trace()
     this.#workers = Array.from({ length: numWorkers }, () => ({
       workerObj: new Worker(
         path.join(import.meta.dirname, 'worker', 'index.ts')
       ),
       status: 'idle'
     }))
+    console.log('Worker pool created!')
   }
 
   [Symbol.asyncDispose] = () =>
