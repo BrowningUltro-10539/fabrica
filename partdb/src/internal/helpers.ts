@@ -9,7 +9,6 @@ import url from 'node:url'
 
 import type { JsonValue } from 'type-fest'
 
-import { SKUCharacters } from './types.ts'
 import type { LocalFile, Product } from './types.ts'
 import type { CheckIfFinalSite } from './worker-pool.ts'
 import workerPool from './worker-pool.ts'
@@ -19,18 +18,6 @@ import workerPool from './worker-pool.ts'
 /* -------------------------------------------------------------------------- */
 
 export const defineAdapter = (fn: Product[]) => fn
-
-const sanitizeSegmenter = new Intl.Segmenter('en-US')
-export function sanitizeSKUSegment(unsanitized: string): string {
-  return [...sanitizeSegmenter.segment(unsanitized)].reduce(
-    (acc, { segment }) => {
-      if (SKUCharacters.includes(segment as (typeof SKUCharacters)[number]))
-        return acc + segment
-      return acc + '-'
-    },
-    '' as string
-  )
-}
 
 /* -------------------------------------------------------------------------- */
 /*                          CACHING AND FILE CREATION                         */

@@ -1,8 +1,8 @@
 import * as cheerio from 'cheerio'
 import he from 'he'
 
-import { sanitizeSKUSegment } from '../helpers.ts'
 import type { ExternalFile, Keyword, Product } from '../types.ts'
+import { sanitizeSKUSegment } from './helpers.ts'
 
 export type GetCategoryPages = {
   operation: 'org.gobilda.getCategoryPages'
