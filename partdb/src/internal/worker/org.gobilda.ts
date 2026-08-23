@@ -132,7 +132,7 @@ export const handleMessage = {
   'org.gobilda.getCategoryPages': (input: GetCategoryPages['input']) => {
     const $ = cheerio.load(new TextDecoder().decode(input.siteBuffer))
     const listRoot = $('div.body > div.container > ul :first')
-    console.log(`List root length: ${listRoot.length}`)
+    console.log(`List root length: ${listRoot.children().length}`)
 
     return getPages(listRoot, $)
   },
