@@ -14,7 +14,7 @@
 - [x] type exports from partdb package
   - [x] better inlining logic/build step for partdb in general? perhaps build not only json but also
 - [ ] moar scrapers (rev, wcp)
-- [ ] inquire about scraping w/ gobilda team
+- [x] inquire about scraping w/ gobilda team
 
 ### site
 
