@@ -1,0 +1,12 @@
+{
+  "name": "devlogs",
+  "private": true,
+  "description": "",
+  "keywords": [],
+  "license": "",
+  "author": "",
+  "type": "module",
+  "dependencies": {
+    "cheerio": "^1.2.0"
+  }
+}
