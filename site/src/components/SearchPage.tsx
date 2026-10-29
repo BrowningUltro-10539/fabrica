@@ -1,3 +1,7 @@
+import {
+  createWindowVirtualizer,
+  measureElement
+} from '@tanstack/solid-virtual'
 import { actions } from 'astro:actions'
 import type { Product } from 'partdb'
 import {
@@ -5,9 +9,14 @@ import {
   createResource,
   createSignal,
   Suspense,
-  createEffect
+  createEffect,
+  onMount,
+  startTransition
 } from 'solid-js'
+import type { Signal } from 'solid-js'
+import { createStore, reconcile, unwrap } from 'solid-js/store'
 import { isServer } from 'solid-js/web'
+import { VList } from 'virtua/solid'
 
 import Logo from './Logo'
 import NoScriptBanner from './NoScriptBanner'
@@ -43,11 +52,72 @@ export default function SearchPage(props: {
   }
   const [query, setQuery] = createSignal(props.initialQuery ?? '')
   const [queryResult, { refetch }] = createResource(query, getProducts, {
-    initialValue: props.initialProducts ?? []
+    initialValue: props.initialProducts ?? [],
+    storage(v) {
+      const [store, setStore] = createStore({ value: v })
+      return [
+        () => store.value,
+        (v) => {
+          performance.mark('query-store-start')
+          const unwrapped = unwrap(store.value)
+          const value = typeof v === 'function' ? v(unwrapped ?? []) : unwrapped
+          setStore('value', reconcile(value, { key: 'sku' }))
+          performance.mark('query-store-end')
+          performance.measure(
+            'query-store',
+            'query-store-start',
+            'query-store-end'
+          )
+          return store.value
+        }
+      ] as Signal<Product[] | undefined>
+    },
+    ssrLoadFrom: 'initial'
   })
 
-  createEffect(() => {
-    console.log(JSON.stringify(queryResult()))
+  const [pending, setPending] = createSignal(false)
+  const updateQuery = async (newQuery: string) => {
+    // this prevents the placeholder screen from activating
+    // when navigating to an already fetched page.
+    //
+    // this *does* hit the Map twice for retrieving a read
+    // (one here, one on the resource fetch), but
+    // i don't think adding logic to
+    // avoid the double lookup would be faster than
+    // letting V8 handle it.
+    if (!previousQueries.get(newQuery)) setPending(true)
+
+    document.startViewTransition(async () => {
+      console.log('Changing DOM...')
+      performance.mark('dom-transition-start')
+      await startTransition(() => setQuery(newQuery))
+      console.log('DOM changed.')
+      performance.mark('dom-transition-end')
+      performance.measure(
+        'dom-transition',
+        'dom-transition-start',
+        'dom-transition-end'
+      )
+      setPending(false)
+    })
+  }
+
+  onMount(() =>
+    createEffect(() => {
+      window.localStorage.setItem('query', query())
+      window.history.replaceState(
+        null,
+        '',
+        `search${query() ? `?q=${query()}` : query()}`
+      )
+    })
+  )
+
+  const productVirtualizer = createWindowVirtualizer({
+    get count() {
+      return queryResult()?.length ?? 0
+    },
+    estimateSize: () => 632
   })
 
   return (
@@ -65,7 +135,7 @@ export default function SearchPage(props: {
           <SearchBar
             placeholder="Search parts..."
             interactivity={{ autofocused: props.initialQuery === undefined }}
-            onInput={(e) => setQuery(e.target.value)}
+            onInput={(e) => updateQuery(e.target.value)}
             onSubmit={() => refetch()}
             value={props.initialQuery}
           />
@@ -78,13 +148,43 @@ export default function SearchPage(props: {
             role="status"
           >
             <span class="font-bold">Results:</span>{' '}
-            <Suspense fallback={'loading...'}>{queryResult()?.length}</Suspense>
+            <Suspense>
+              <span classList={{ 'blur-sm': pending() }}>
+                {queryResult()?.length}
+              </span>
+            </Suspense>
           </p>
-          <Suspense fallback={<li>loading</li>}>
-            <ol class="flex flex-wrap items-center gap-4">
-              <For each={queryResult()}>
-                {(doc, index) => <ProductItem doc={doc} index={index} />}
-              </For>
+          <Suspense>
+            <ol class="flex w-full flex-wrap items-center gap-4">
+              <div
+                class="relative w-full"
+                style={{
+                  height: `${productVirtualizer.getTotalSize()}`
+                }}
+              >
+                <For each={productVirtualizer.getVirtualItems()}>
+                  {(virtualItem, index) => (
+                    <div
+                      key={virtualItem.key}
+                      ref={(el) => {
+                        el.dataset.index = String(virtualItem.index)
+                        productVirtualizer.measureElement(el)
+                      }}
+                      class="absolute top-0 left-0 w-full"
+                      style={{
+                        height: `${virtualItem.size}px`,
+                        transform: `translateY(${virtualItem.start}px)`
+                      }}
+                    >
+                      <ProductItem
+                        doc={queryResult()[virtualItem.index]}
+                        index={index}
+                        loading={pending}
+                      />
+                    </div>
+                  )}
+                </For>
+              </div>
             </ol>
           </Suspense>
         </div>

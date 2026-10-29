@@ -49,7 +49,7 @@ let committed = false
 
 export const search = defineAction({
   input: z.string(),
-  handler: (input) => {
+  handler: async (input) => {
     if (!committed) {
       for (const product of products) {
         document.add(product)
@@ -61,6 +61,7 @@ export const search = defineAction({
     ]
       .map((sku) => products.find((product) => product.sku === sku))
       .filter((product) => !!product)
+    // await new Promise((res) => setTimeout(res, 2000))
     return result
   }
 })
