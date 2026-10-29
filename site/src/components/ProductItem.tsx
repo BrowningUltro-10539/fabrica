@@ -1,16 +1,13 @@
-import type { ExternalFile, Product } from 'partdb'
+import type { Product } from 'partdb'
 import { brands } from 'partdb'
-import { createMemo, Match, Switch } from 'solid-js'
+import { createMemo } from 'solid-js'
 import type { Accessor } from 'solid-js'
-
-import './skeleton.css'
 
 import { prefetch } from '../lib/prefetch'
 
 export default function ProductItem(props: {
   doc: Product
   index: Accessor<number>
-  loading: Accessor<boolean>
 }) {
   // const segmenter = new Intl.Segmenter('en', { granularity: 'sentence' })
 
@@ -23,70 +20,29 @@ export default function ProductItem(props: {
   const brandEntry = createMemo(() =>
     brands.find((entry) => props.doc.sku.startsWith(entry.id))
   )
-  const viewTransitionStart = createMemo(() =>
-    props.doc.sku.replaceAll('.', '-')
-  )
   return (
-    <li
-      class="shrink grow basis-114"
-      style={{ 'view-transition-name': `${viewTransitionStart()}-li` }}
-    >
+    <li class="shrink grow basis-114">
       <article
         class="flex w-full flex-col justify-start gap-4 rounded-3xl border border-fb-black/5 bg-fb-surface-light p-4 shadow-md xs:h-48 xs:flex-row dark:border-fb-white/5 dark:bg-fb-surface-dark"
         onMouseOver={() => prefetch?.(`/products/${props.doc.sku}`)}
-        // style={{
-        //   'view-transition-name': `${viewTransitionStart()}-card`
-        // }}
       >
-        <Switch>
-          <Match when={props.loading()}>
-            <div class="skeleton aspect-square rounded-lg bg-fb-off-white shadow-md" />
-          </Match>
-          <Match when={props.doc.image?.type === 'external'}>
-            <img
-              src={(props.doc.image as ExternalFile).url}
-              alt={`${props.doc.name} by ${brandEntry()?.name ?? 'Unknown'}`}
-              class={`aspect-square rounded-lg object-cover object-center shadow-md`}
-              // style={{
-              //   'view-transition-name': `${viewTransitionStart()}-image`
-              // }}
-              classList={{
-                'blur-sm': props.loading()
-              }}
-              loading={props.index() <= 6 ? 'eager' : 'lazy'}
-            />
-          </Match>
-        </Switch>
+        {props.doc.image?.type === 'external' ? (
+          <img
+            src={props.doc.image.url}
+            alt={`${props.doc.name} by ${brandEntry()?.name ?? 'Unknown'}`}
+            class="aspect-square rounded-lg object-cover object-center shadow-md"
+            loading={props.index() <= 6 ? 'eager' : 'lazy'}
+          />
+        ) : null}
         <div class="flex h-40 w-full flex-col items-start justify-between">
           <div class="flex w-full flex-col items-start justify-start">
-            <h3
-              class="mb-0 line-clamp-1 overflow-hidden font-display text-xl font-bold text-ellipsis text-fb-text-primary-light dark:text-fb-text-primary-dark"
-              classList={{
-                'blur-sm': props.loading()
-              }}
-              // style={{
-              //   'view-transition-name': `${viewTransitionStart()}-title`
-              // }}
-            >
+            <h3 class="mb-0 line-clamp-1 overflow-hidden font-display text-xl font-bold text-ellipsis text-fb-text-primary-light dark:text-fb-text-primary-dark">
               {props.doc.name}
             </h3>
-            <h4
-              class="mb-2 line-clamp-1 overflow-hidden font-mono text-xs text-fb-off-black dark:text-fb-off-white"
-              classList={{
-                'blur-sm': props.loading()
-              }}
-              // style={{
-              //   'view-transition-name': `${viewTransitionStart()}-quick-specs`
-              // }}
-            >
+            <h4 class="mb-2 line-clamp-1 overflow-hidden font-mono text-xs text-fb-off-black dark:text-fb-off-white">
               {`Brand: ${brandEntry()?.name ?? 'Unknown'}, SKU: ${props.doc.sku.slice(Number(brandEntry()?.id.length) + 1)}`}
             </h4>
-            <p
-              class="line-clamp-2 overflow-hidden text-sm/4.5 text-ellipsis text-fb-text-secondary-light dark:text-fb-text-secondary-dark"
-              classList={{
-                'blur-sm': props.loading()
-              }}
-            >
+            <p class="line-clamp-2 overflow-hidden text-sm/4.5 text-ellipsis text-fb-text-secondary-light dark:text-fb-text-secondary-dark">
               {props.doc.description}
             </p>
           </div>
