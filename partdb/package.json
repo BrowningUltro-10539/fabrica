@@ -14,11 +14,11 @@
   },
   "devDependencies": {
     "@types/he": "^1.2.3",
-    "@types/jsdom": "^28.0.3",
+    "@types/jsdom": "^30.0.0",
     "cheerio": "^1.2.0",
-    "he": "^1.2.0",
-    "tsdown": "^0.22.3",
-    "type-fest": "5.7.0",
-    "unplugin-macros": "^0.20.2"
+    "he": "^2.0.0",
+    "tsdown": "^0.23.3",
+    "type-fest": "5.10.0",
+    "unplugin-macros": "^0.23.3"
   }
 }
