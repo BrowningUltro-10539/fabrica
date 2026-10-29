@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio'
-import he from 'he'
+import * as he from 'he'
 
 import type { ExternalFile, Keyword, Product } from '../types.ts'
 import { sanitizeSKUSegment } from './helpers.ts'
