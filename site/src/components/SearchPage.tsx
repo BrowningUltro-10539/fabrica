@@ -1,12 +1,6 @@
 import { actions } from 'astro:actions'
 import type { Product } from 'partdb'
-import {
-  For,
-  createResource,
-  createSignal,
-  Suspense,
-  createEffect
-} from 'solid-js'
+import { For, createResource, createSignal, Suspense, onMount } from 'solid-js'
 import { isServer } from 'solid-js/web'
 
 import Logo from './Logo'
@@ -22,6 +16,21 @@ export default function SearchPage(props: {
 
   let currentTimer: ReturnType<typeof setTimeout> | undefined
   let currentReject: (reason?: unknown) => void | undefined
+  let internalSearch: (
+    query: string
+  ) => Product[] | Promise<Product[]> = async (query: string) => {
+    const { data, error } = await actions.search(query)
+    if (error) throw error
+    return data
+  }
+  onMount(async () => {
+    const { init, searcher } = await import('../lib/search')
+    console.log('Client side search imported!')
+    init()
+    internalSearch = searcher
+    console.log('Switched to client-side search')
+  })
+
   const getProducts = async (query: string): Promise<Product[]> => {
     if (isServer) return props.initialProducts ?? []
 
@@ -35,8 +44,7 @@ export default function SearchPage(props: {
       currentTimer = setTimeout(res, 50)
       currentReject = rej
     })
-    const { data, error } = await actions.search(query)
-    if (error) throw error
+    const data = await internalSearch(query)
     products = data
     previousQueries.set(query, products)
     return products
@@ -44,10 +52,6 @@ export default function SearchPage(props: {
   const [query, setQuery] = createSignal(props.initialQuery ?? '')
   const [queryResult, { refetch }] = createResource(query, getProducts, {
     initialValue: props.initialProducts ?? []
-  })
-
-  createEffect(() => {
-    console.log(JSON.stringify(queryResult()))
   })
 
   return (
