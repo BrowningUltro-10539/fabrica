@@ -24,11 +24,12 @@ export default function SearchPage(props: {
     return data
   }
   onMount(async () => {
+    const start = Date.now()
     const { init, searcher } = await import('../lib/search')
     console.log('Client side search imported!')
     init()
     internalSearch = searcher
-    console.log('Switched to client-side search')
+    console.log(`Switched to client-side search in ${Date.now() - start}ms`)
   })
 
   const getProducts = async (query: string): Promise<Product[]> => {
